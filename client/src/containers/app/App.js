@@ -1,24 +1,30 @@
 import React, { Component } from 'react';
-import './App.css';
+// import './App.css';
+
+import Header from "../header/header"
+
+import {
+  BrowserRouter as Router,
+  Route,
+  Redirect,
+  Switch
+} from 'react-router-dom';
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <Router>
+        <div>
+          <Header />
+          <div style={{paddingTop:90}}>
+            <Switch>
+              <Route exact path="/sceneperformance/" component={Home}/>
+              <Route path="/sceneperformance/detail/:detail" component={ScenePage}/>
+              <Redirect to="/sceneperformance/" />
+            </Switch>
+          </div>
+        </div>
+      </Router>
     );
   }
 }
