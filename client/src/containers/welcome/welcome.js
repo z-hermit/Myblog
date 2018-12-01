@@ -5,9 +5,9 @@ import { connect } from 'react-redux'
 //react router
 import { Link } from 'react-router-dom';
 //components
-import InfoTable from "../../components/info_table";
+import Header from "../header/header";
 //actions
-import {actions as listActions} from '../../redux/';
+// import {actions as listActions} from '../../redux/';
 //utils
 import Utils from "../../util/utils";
 //image
@@ -34,20 +34,23 @@ class welcome extends Component {
     console.log("welcome render");
 
     return 
-    <div class="welcome_div">
-      <img src={Img} alt="Welcome" srcset=""/>
+    <div>
+      <Header />
+      <div class="welcome_div">
+        <img src={Img} alt="Welcome" srcset=""/>
+      </div>
     </div>
   }
 }
 
 const mapStateToProps = state => {
   return {
-    detailData:state.detailData[],
+    // detailData:state.detailData[],
   }
 }
 
 const mapDispatchToProps = dispatch => ({
-  requestData: (index, scene, packageName) => dispatch(detailActions.requestData(index, scene, packageName, "inUse"))
+  // requestData: (index, scene, packageName) => dispatch(detailActions.requestData(index, scene, packageName, "inUse"))
 })
 
 export default connect(
