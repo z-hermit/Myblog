@@ -9,7 +9,7 @@ import InfoTable from "../../components/info_table";
 //actions
 import {actions as listActions} from '../../redux/';
 //utils
-import Utils from "../../util/utils";
+import Utils from "../../utils/utils";
 
 //const 
 

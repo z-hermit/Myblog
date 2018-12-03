@@ -9,7 +9,7 @@ import Header from "../header/header";
 //actions
 // import {actions as listActions} from '../../redux/';
 //utils
-import Utils from "../../util/utils";
+import Utils from "../../utils/utils";
 //image
 import Img from "../../images/omg.png"
 //const 
@@ -22,7 +22,6 @@ class welcome extends Component {
   }
 
   componentDidUpdate() {
-    super();
   }
 
   // shouldComponentUpdate(nextProps,nextState){
@@ -33,13 +32,13 @@ class welcome extends Component {
     const { detailData } = this.props;
     console.log("welcome render");
 
-    return 
-    <div>
-      <Header />
-      <div class="welcome_div">
-        <img src={Img} alt="Welcome" srcset=""/>
-      </div>
-    </div>
+    return (
+        <div>
+          <Header />
+          <div className="welcome_div">
+            <img src={Img} alt="Welcome" srcSet=""/>
+          </div>
+        </div>)
   }
 }
 

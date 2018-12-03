@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
+//css
 // import './App.css';
 
 import Header from "../header/header"
+import Welcome from "../welcome/welcome"
+import Login from "../login/login"
+import Signup from "../signup/signup"
 
 import {
   BrowserRouter as Router,
@@ -18,9 +22,10 @@ class App extends Component {
           <Header />
           <div style={{paddingTop:90}}>
             <Switch>
-              <Route exact path="/sceneperformance/" component={Home}/>
-              <Route path="/sceneperformance/detail/:detail" component={ScenePage}/>
-              <Redirect to="/sceneperformance/" />
+              <Route exact path="/welcome/" component={Welcome}/>
+              <Route exact path="/login/" component={Login}/>
+              <Route exact path="/signup/" component={Signup}/>
+              <Redirect to="/welcome/" />
             </Switch>
           </div>
         </div>

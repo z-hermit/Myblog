@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"fmt"
 	"github.com/badoux/checkmail"
 	"github.com/kataras/iris"
 	"golang.org/x/crypto/bcrypt"
@@ -109,19 +110,18 @@ func UserLogin(ctx iris.Context) {
 
 	db := CO.DB()
 	var (
-		userCount int
-		id        int
-		username  string
-		password  string
+		id       int
+		username string
+		password string
 	)
 
-	db.QueryRow("SELECT COUNT(id) AS userCount, id, username, password FROM users WHERE username=?", rusername).Scan(&userCount, &id, &username, &password)
+	err := db.QueryRow("SELECT id, username, password FROM users WHERE username=?", rusername).Scan(&id, &username, &password)
 
 	encErr := bcrypt.CompareHashAndPassword([]byte(password), []byte(rpassword))
-
+	fmt.Println(err)
 	if rusername == "" || rpassword == "" {
 		resp["mssg"] = "Some values are missing!!"
-	} else if userCount == 0 {
+	} else if err != nil {
 		resp["mssg"] = "Invalid username!!"
 	} else if encErr != nil {
 		resp["mssg"] = "Invalid password!!"

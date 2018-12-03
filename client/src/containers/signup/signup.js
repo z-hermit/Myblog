@@ -9,9 +9,15 @@ import Header from "../header/header";
 //actions
 import {actions as listActions} from '../../redux/';
 //utils
-import Utils from "../../util/utils";
+import Utils from "../../utils/utils";
+import Reg from "../../utils/reg"
+
+import {
+  Form, Input, Icon, Button, AutoComplete,
+} from 'antd';
 
 //const 
+const FormItem = Form.Item;
 
 class signup extends Component {
 
@@ -20,39 +26,134 @@ class signup extends Component {
     console.log("signup constructor");
   }
 
-  componentDidUpdate() {
-    super();
+  handleSubmit = (e) => {
+    e.preventDefault();
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        console.log('Received values of form: ', values);
+      }
+    });
   }
 
-  // shouldComponentUpdate(nextProps,nextState){
-    
-  // }
+  compareToFirstPassword = (rule, value, callback) => {
+    const form = this.props.form;
+
+    if (value && value !== form.getFieldValue('password')) {
+      callback('Two passwords that you enter is inconsistent!');
+    } else {
+      callback();
+    }
+  }
+
+  validateToNextPassword = (rule, value, callback) => {
+    const form = this.props.form;
+    if (value) {
+      form.validateFields(['confirm'], { force: true });
+    }
+    callback();
+  }
 
   render() {
-    const { detailData } = this.props;
     console.log("signup render");
+
+    const { getFieldDecorator } = this.props.form;
+
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 8 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 16 },
+      },
+    };
+    const tailFormItemLayout = {
+      wrapperCol: {
+        xs: {
+          span: 24,
+          offset: 0,
+        },
+        sm: {
+          span: 16,
+          offset: 8,
+        },
+      },
+    };
 
     return (
       <div>
         <Header />
-        <div class="notes_wrapper">
-
-          <div class="log_sign">
-            <a href="/login" class="pri_btn">Already have an account?</a>
+        <div className="notes_wrapper">
+          <div className="log_sign">
+            <Link to="/signup" className="pri_btn">Already have an account?</Link>
           </div>
 
-          <div class="register cua ">
-            <div class="display_text">
+          <div className="register cua ">
+            <div className="display_text">
               <span>Get started now and let the fun begins</span>
             </div>
-            <form class="form_register">
-              <input type="text" name="username" value="" class="r_username" autofocus spellcheck="false" autocomplete='false' placeholder='Username'
-                required />
-              <input type="email" name="email" value="" class="r_email" spellcheck="false" autocomplete='false' placeholder='Email' required/>
-              <input type="password" name="password" value="" class="r_password" placeholder='Password' required/>
-              <input type="password" name="password_again" value="" class="r_password_again" placeholder='Password again' required/>
-              <input type="submit" name="" value="Signup for free" class="r_submit"/>
-            </form>
+            <Form onSubmit={this.handleSubmit} >
+              <FormItem
+                {...formItemLayout}
+                label="Username"
+              >
+                {getFieldDecorator('username', {
+                  rules: [{
+                    pattern: /^[a-zA-Z][a-zA-Z0-9_]{2,20}$/, message: 'The input is not valid username!',
+                  }, {
+                    required: true, message: 'Please input your username!',
+                  }],
+                })(
+                  <Input type="text"/>
+                )}
+              </FormItem>
+              <FormItem
+                {...formItemLayout}
+                label="E-mail"
+              >
+                {getFieldDecorator('email', {
+                  rules: [{
+                    type: 'email', message: 'The input is not valid E-mail!',
+                  }, {
+                    required: true, message: 'Please input your E-mail!',
+                  }],
+                })(
+                  <Input />
+                )}
+              </FormItem>
+              <FormItem
+                {...formItemLayout}
+                label="Password"
+              >
+                {getFieldDecorator('password', {
+                  rules: [{
+                    required: true, message: 'Please input your password!',
+                  }, {
+                    validator: this.validateToNextPassword,
+                  }],
+                })(
+                  <Input type="password" />
+                )}
+              </FormItem>
+              <FormItem
+                {...formItemLayout}
+                label="Confirm Password"
+              >
+                {getFieldDecorator('confirm', {
+                  rules: [{
+                    required: true, message: 'Please confirm your password!',
+                  }, {
+                    validator: this.compareToFirstPassword,
+                  }],
+                })(
+                  <Input type="password" />
+                )}
+              </FormItem>
+              <FormItem {...tailFormItemLayout}>
+                <Button type="primary" htmlType="submit">Register</Button>
+              </FormItem>
+            </Form>
           </div>
 
         </div>
@@ -74,5 +175,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(signup);
-
+)(Form.create()(signup));

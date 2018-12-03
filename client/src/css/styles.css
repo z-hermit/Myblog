@@ -38,7 +38,7 @@ input[type="text"],
 input[type="email"],
 input[type="password"],
 textarea {
-  border: 1px solid #eee;
+  border: 1px solid #999;
   border-radius: 4px;
   font-family: "Open Sans", "Roboto", Tahoma, arial, sans-serif;
   color: #0b867a;
@@ -393,7 +393,7 @@ select {
   background: #f7f9fa; }
 
 .cua {
-  width: 300px;
+  width: 400px;
   position: relative;
   top: 130px;
   left: 530px; }
