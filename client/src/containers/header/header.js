@@ -36,23 +36,23 @@ class header extends Component {
     return this.props.login ? 
     <div className="header_loggedin">
       <div className="left">
-        <a href="/">Home</a>
-        <a href="/explore">Explore</a>
-        <a href="/create_post">New Post</a>
-        <a href="/deactivate">Deactivate</a>
+        <Link to="/">Home</Link>
+        <Link to="/explore">Explore</Link>
+        <Link to="/create_post">New Post</Link>
+        <Link to="/deactivate">Deactivate</Link>
       </div>
       <div className="right">
-        <a href="/edit_profile">Edit Profile</a>
-        <a href="/profile/{{ .session.id }}">Profile</a>
-        <a href="/logout">Logout</a>
+        <Link to="/edit_profile">Edit Profile</Link>
+        <Link to="/profile/{{ .session.id }}">Profile</Link>
+        <Link to="/logout">Logout</Link>
       </div>
     </div>
     :
     <div className="index_header">
       <div className="right">
-        <a href="/welcome">Home</a>
-        <a href="/login">Login</a>
-        <a href="/signup">Signup</a>
+        <Link to="/welcome">Home</Link>
+        <Link to="/login">Login</Link>
+        <Link to="/signup">Signup</Link>
       </div>
     </div>
   }

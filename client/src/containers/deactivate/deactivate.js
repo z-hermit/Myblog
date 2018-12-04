@@ -13,11 +13,11 @@ import Utils from "../../utils/utils";
 
 //const 
 
-class template extends Component {
+class deactivate extends Component {
 
   constructor(props) {
     super(props);
-    console.log("template constructor");
+    console.log("deactivate constructor");
   }
 
   componentDidUpdate() {
@@ -25,18 +25,17 @@ class template extends Component {
 
   render() {
     // const { detailData } = this.props;
-    console.log("template render");
+    console.log("deactivate render");
 
     return (
-      <div style={{ 
-        position: "relative",
-        marginLeft: "auto",
-        marginRight: "auto",
-        width: 800,
-        marginBottom:50
-      }}>
-
-        
+      <div class="notes_wrapper">
+        <div class="registered deactivate">
+          <span class="deactivate_title">{"Deactivate your account?"}</span>
+          <span>{'All of your posts, followers, likes & other info will be permanently deleted. And you won\'t be able to find it again.'}</span>
+          <div class="deactivate_btn">
+            <a href="#" class="pri_btn d_btn" >{'Deactivate'}</a>
+          </div>
+        </div>
       </div>
     );
   }
@@ -55,5 +54,5 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(template);
+)(deactivate);
 

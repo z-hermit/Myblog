@@ -13,30 +13,40 @@ import Utils from "../../utils/utils";
 
 //const 
 
-class template extends Component {
+class home extends Component {
 
   constructor(props) {
     super(props);
-    console.log("template constructor");
+    console.log("home constructor");
   }
 
   componentDidUpdate() {
   }
 
   render() {
-    // const { detailData } = this.props;
-    console.log("template render");
+    const { post } = this.props;
+    console.log("home render");
 
     return (
-      <div style={{ 
-        position: "relative",
-        marginLeft: "auto",
-        marginRight: "auto",
-        width: 800,
-        marginBottom:50
-      }}>
+      <div class="notes_wrapper">
+        <div class="home">
 
-        
+          <div class="home_info">
+            <span>{`${post.length} Notes`}</span>
+            <a href="/create_post" class="pri_btn">{'Create Post'}</a>
+          </div>
+
+          {
+            post.length > 0 ? 
+            <div>
+              <Post />
+              <End />
+            </div>
+            :
+            <Nothing tip={"No posts for you. Go ahead and create one!!"} />
+          }
+          
+        </div>
       </div>
     );
   }
@@ -55,5 +65,5 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(template);
+)(home);
 
