@@ -39,28 +39,7 @@ func Index(ctx iris.Context) {
 		feeds = append(feeds, feed)
 	}
 
-	renderTemplate(ctx, "index", iris.Map{
-		"title":   "Home",
-		"session": ses(ctx),
-		"posts":   feeds,
-		"GET":     CO.Get,
-	})
-}
-
-// Welcome route
-func Welcome(ctx iris.Context) {
-	notLoggedIn(ctx)
-	renderTemplate(ctx, "welcome", iris.Map{
-		"title": "Welcome",
-	})
-}
-
-// NotFound route
-func NotFound(ctx iris.Context) {
-	renderTemplate(ctx, "404", iris.Map{
-		"title":   "Oops!! Error",
-		"session": ses(ctx),
-	})
+	ctx.JSON(feeds)
 }
 
 // Profile Page

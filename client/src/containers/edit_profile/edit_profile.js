@@ -5,11 +5,13 @@ import { connect } from 'react-redux'
 //react router
 import { Link } from 'react-router-dom';
 //components
-import InfoTable from "../../components/info_table";
+// import InfoTable from "../../components/info_table";
 //actions
-import {actions as listActions} from '../../redux/';
+// import {actions as listActions} from '../../redux/';
 //utils
 import Utils from "../../utils/utils";
+
+import Img from "../../images/golang.png"
 
 //const 
 
@@ -18,10 +20,6 @@ class EditProfile extends Component {
   constructor(props) {
     super(props);
     console.log("EditProfile constructor");
-  }
-
-  componentDidUpdate() {
-    super();
   }
 
   // shouldComponentUpdate(nextProps,nextState){
@@ -37,16 +35,16 @@ class EditProfile extends Component {
 
         <div className='edit'>
           <div className="edit_info">
-            <img className="edit_img" src='/users/{{ .session.id }}/avatar.png' alt="Your avatar" />
-            <span>session.username</span>
+            <img className="edit_img" src={Img} alt="Your avatar" />
+            <span>username</span>
           </div>
           <div className="eu_div">
             <span className='edit_span'>Username</span>
-            <input type="text" className='e_username ep_username' placeholder='Username..' autoComplete='false' autoFocus spellCheck='false' value='{{ .session.username }}' />
+            <input type="text" className='e_username ep_username' placeholder='Username..' autoComplete='false' autoFocus spellCheck='false' value='username' />
           </div>
           <div className="ee_div">
             <span className='edit_span'>Email</span>
-            <input type="email" className='e_email ep_email' placeholder='Email..' autoComplete='false' spellCheck='false' value='{{ .email }}' />
+            <input type="email" className='e_email ep_email' placeholder='Email..' autoComplete='false' spellCheck='false' value='email' />
           </div>
           <div className="eb_div">
             <span className='edit_span'>Bio</span>

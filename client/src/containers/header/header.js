@@ -30,10 +30,10 @@ class header extends Component {
   // }
 
   render() {
-    const { detailData } = this.props;
+    const { user } = this.props;
     console.log("header render");
-    console.log(this.props.user)
-    return this.props.user ? 
+    console.log(user)
+    return user ? 
     <div className="header_loggedin">
       <div className="left">
         <Link to="/">Home</Link>

@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 //css
 // import './App.css';
 
+import { connect } from 'react-redux'
+
 import Header from "../header/header"
 import Welcome from "../welcome/welcome"
 import Login from "../login/login"
@@ -20,21 +22,32 @@ import {
 
 class App extends Component {
   render() {
+    const { user } = this.props;
+    let loginSwitch;
+    if (user) {
+      loginSwitch = 
+      <Switch>
+              <Route exact path="/" component={Home}/>
+              <Route exact path="/create_post/" component={CreatePost}/>
+              <Route exact path="/edit_profile/" component={EditProfile}/>
+              <Route exact path="/profile/" component={Profile}/>
+              <Redirect to="/" />
+            </Switch>
+    } else {
+      loginSwitch = 
+      <Switch>
+              <Route exact path="/welcome/" component={Welcome}/>
+              <Route exact path="/login/" component={Login}/>
+              <Route exact path="/signup/" component={Signup}/>
+              <Redirect to="/welcome/" />
+            </Switch>
+    }
     return (
       <Router>
         <div>
           <Header />
           <div style={{paddingTop:90}}>
-            <Switch>
-              <Route exact path="/welcome/" component={Welcome}/>
-              <Route exact path="/login/" component={Login}/>
-              <Route exact path="/signup/" component={Signup}/>
-              <Route exact path="/" component={Home}/>
-              <Route exact path="/create_post/" component={CreatePost}/>
-              <Route exact path="/edit_profile/" component={EditProfile}/>
-              <Route exact path="/profile/" component={Profile}/>
-              <Redirect to="/welcome/" />
-            </Switch>
+            {loginSwitch}
           </div>
         </div>
       </Router>
@@ -42,4 +55,18 @@ class App extends Component {
   }
 }
 
-export default App;
+
+const mapStateToProps = state => {
+  return {
+    user:state.user
+  }
+}
+
+const mapDispatchToProps = dispatch => ({
+  // requestData: (index, scene, packageName) => dispatch(detailActions.requestData(index, scene, packageName, "inUse"))
+})
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);

@@ -6,52 +6,38 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom';
 //components
 // import InfoTable from "../../components/info_table";
-import Nothing from "./nothing"
-import End from "./end"
-import Post from "./post"
 //actions
 // import {actions as listActions} from '../../redux/';
 //utils
 import Utils from "../../utils/utils";
 
+import Img from "../../images/golang.png"
+
 //const 
 
-class home extends Component {
+class Nothing extends Component {
 
   constructor(props) {
     super(props);
-    console.log("home constructor");
-  }
-
-  componentDidUpdate() {
   }
 
   render() {
-    // const { post } = this.props;
-    let post = [];
-    console.log("home render");
-
     return (
-      <div class="notes_wrapper">
-        <div class="home">
-
-          <div class="home_info">
-            <span>{`${post.length} Notes`}</span>
-            <a href="/create_post" class="pri_btn">{'Create Post'}</a>
+      <a href="/view_post/{{ $post.postID }}" className="note">
+        <div className="note_header common_header">
+          <img src={Img} alt="" srcset=""/>
+          <div className="note_h_left">
+            <span className="note_username">username</span>
+            <span className='note_time'>created time</span>
           </div>
-
-          {
-            post.length > 0 ? 
-            <div>
-              <Post />
-              <End />
-            </div>
-            :
-            <Nothing tip={"No posts for you. Go ahead and create one!!"} />
-          }
-          
         </div>
-      </div>
+        <div className="note_title">
+          <span>post title</span>
+        </div>
+        <div className="note_content">
+          <span>post content</span>
+        </div>
+      </a>
     );
   }
 }
@@ -69,5 +55,5 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(home);
+)(Nothing);
 
