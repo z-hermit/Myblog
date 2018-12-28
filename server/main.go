@@ -6,6 +6,8 @@ import (
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/recover"
+
+	"github.com/iris-contrib/middleware/cors"
 )
 
 func main() {

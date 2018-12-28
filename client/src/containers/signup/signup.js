@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 //components
 import Header from "../header/header";
 //actions
-import {actions as listActions} from '../../redux/';
+import {actions } from '../../redux/user';
 //utils
 import Utils from "../../utils/utils";
 import Reg from "../../utils/reg"
@@ -29,8 +29,12 @@ class signup extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
+      if (err) {
+        console.log(err)
+      } else {
         console.log('Received values of form: ', values);
+        this.props.signupRequest(values.username, values.password, values.email, "");
+        //TODO
       }
     });
   }
@@ -47,10 +51,15 @@ class signup extends Component {
 
   validateToNextPassword = (rule, value, callback) => {
     const form = this.props.form;
+
     if (value) {
       form.validateFields(['confirm'], { force: true });
     }
-    callback();
+    if (/^[a-zA-Z0-9_]{2,20}$/.test(value)) {
+      callback();
+    } else {
+      callback("only [a-zA-Z][a-zA-Z0-9_]");
+    }
   }
 
   render() {
@@ -169,7 +178,7 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => ({
-  // requestData: (index, scene, packageName) => dispatch(detailActions.requestData(index, scene, packageName, "inUse"))
+  signupRequest: (username, password, email, avatarPath) => dispatch(actions.set(username, password, "man", email, avatarPath))
 })
 
 export default connect(

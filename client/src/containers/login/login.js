@@ -45,16 +45,16 @@ class login extends Component {
     const { getFieldDecorator } = this.props.form;
 
     return (
-          <div class="notes_wrapper">
+          <div className="notes_wrapper">
     
-            <div class="log_sign">
-              <Link to="/signup" class="pri_btn" >
+            <div className="log_sign">
+              <Link to="/signup" className="pri_btn" >
                 {"Need an account?"}
               </Link>
             </div>
     
-            <div class="register cua ">
-              <div class="display_text">
+            <div className="register cua ">
+              <div className="display_text">
                 <span>Get started again</span>
               </div>
               <Form onSubmit={this.handleSubmit} className="login-form"  id="normal-login">

@@ -32,8 +32,8 @@ class header extends Component {
   render() {
     const { detailData } = this.props;
     console.log("header render");
-
-    return this.props.login ? 
+    console.log(this.props.user)
+    return this.props.user ? 
     <div className="header_loggedin">
       <div className="left">
         <Link to="/">Home</Link>
@@ -60,7 +60,7 @@ class header extends Component {
 
 const mapStateToProps = state => {
   return {
-    // login:state.pageState.login,
+    user:state.user
   }
 }
 

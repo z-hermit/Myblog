@@ -10,13 +10,14 @@ export const types = {
   LOGOUT : 'LOGOUT'
 }
 
-const initialState = {
-  id : null,
-  username : null,
-  email : null,
-  bio : null,
-  avatarPath: null
-}
+// const initialState = {
+//   id : null,
+//   username : null,
+//   email : null,
+//   bio : null,
+//   avatarPath: null
+// }
+const initialState = null;
 
 const pageState = (state = initialState, action) => {
   switch (action.type) {
