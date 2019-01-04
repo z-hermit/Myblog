@@ -10,23 +10,9 @@ import (
 	"github.com/badoux/checkmail"
 	"github.com/kataras/iris"
 	"golang.org/x/crypto/bcrypt"
+	"mywork.com/Myblog/server/domain/models"
+	"mywork.com/Myblog/server/infrastructure"
 )
-
-// Signup route
-func Signup(ctx iris.Context) {
-	notLoggedIn(ctx)
-	renderTemplate(ctx, "signup", iris.Map{
-		"title": "Signup For Free",
-	})
-}
-
-// Login route
-func Login(ctx iris.Context) {
-	notLoggedIn(ctx)
-	renderTemplate(ctx, "login", iris.Map{
-		"title": "Login To Continue",
-	})
-}
 
 // Logout route
 func Logout(ctx iris.Context) {
@@ -42,8 +28,6 @@ func Logout(ctx iris.Context) {
 
 // UserSignup function to register user
 func UserSignup(ctx iris.Context) {
-	resp := make(map[string]interface{})
-
 	username := ctx.PostValueTrim("username")
 	email := ctx.PostValueTrim("email")
 	password := ctx.PostValueTrim("password")
@@ -51,33 +35,32 @@ func UserSignup(ctx iris.Context) {
 
 	mailErr := checkmail.ValidateFormat(email)
 
-	db := CO.DB()
-
 	var (
 		userCount  int
 		emailCount int
+		response   models.JsonResponse
 	)
 
-	db.QueryRow("SELECT COUNT(id) AS userCount FROM users WHERE username=?", username).Scan(&userCount)
-	db.QueryRow("SELECT COUNT(id) AS emailCount FROM users WHERE email=?", email).Scan(&emailCount)
+	response.Code = models.FAIL
+	infrastructure.SelectOne("COUNT(id) AS userCount", "User", "Username", username).Scan(&userCount)
+	infrastructure.SelectOne("COUNT(id) AS emailCount", "User", "Email", email).Scan(&emailCount)
 
 	if username == "" || email == "" || password == "" || passwordAgain == "" {
-		resp["mssg"] = "Some values are missing!!"
+		response.Msg = "Some values are missing!!"
 	} else if len(username) < 4 || len(username) > 32 {
-		resp["mssg"] = "Username should be between 4 and 32"
+		response.Msg = "Username should be between 4 and 32"
 	} else if mailErr != nil {
-		resp["mssg"] = "Invalid email format!!"
+		response.Msg = "Invalid email format!!"
 	} else if password != passwordAgain {
-		resp["mssg"] = "Passwords don't match"
+		response.Msg = "Passwords don't match"
 	} else if userCount > 0 {
-		resp["mssg"] = "Username already exists!!"
+		response.Msg = "Username already exists!!"
 	} else if emailCount > 0 {
-		resp["mssg"] = "Email already exists!!"
+		response.Msg = "Email already exists!!"
 	} else {
 
-		stmt, _ := db.Prepare("INSERT INTO users(username, email, password, joined) VALUES (?, ?, ?, ?)")
-		rs, iErr := stmt.Exec(username, email, hash(password), time.Now())
-		CO.Err(iErr)
+		rs, err := infrastructure.Insert("User", username, email, hash(password), time.Now())
+		CO.Err(err)
 		insertID, _ := rs.LastInsertId()
 		insStr := strconv.FormatInt(insertID, 10)
 
@@ -94,44 +77,45 @@ func UserSignup(ctx iris.Context) {
 		session.Set("id", insStr)
 		session.Set("username", username)
 
-		resp["success"] = true
-		resp["mssg"] = "Hello, " + username + "!!"
+		response.Msg = "Hello, " + username + "!!"
+		response.Code = models.SUCCESS
 
 	}
-	json(ctx, resp)
+	json(ctx, response)
 }
 
 // UserLogin function to log user in
 func UserLogin(ctx iris.Context) {
-	resp := make(map[string]interface{})
 
 	rusername := ctx.PostValueTrim("username")
 	rpassword := ctx.PostValueTrim("password")
 
-	db := CO.DB()
 	var (
 		id       int
 		username string
 		password string
+		response models.JsonResponse
 	)
 
-	err := db.QueryRow("SELECT id, username, password FROM users WHERE username=?", rusername).Scan(&id, &username, &password)
+	response.Code = models.FAIL
 
-	encErr := bcrypt.CompareHashAndPassword([]byte(password), []byte(rpassword))
+	infrastructure.SelectOne("id, username, password", "User", "Username", rusername).Scan(&id, &username, &password)
+
+	err := bcrypt.CompareHashAndPassword([]byte(password), []byte(rpassword))
 	fmt.Println(err)
 	if rusername == "" || rpassword == "" {
-		resp["mssg"] = "Some values are missing!!"
+		response.Msg = "Some values are missing!!"
 	} else if err != nil {
-		resp["mssg"] = "Invalid username!!"
-	} else if encErr != nil {
-		resp["mssg"] = "Invalid password!!"
+		response.Msg = "Invalid username!!"
+	} else if err != nil {
+		response.Msg = "Invalid password!!"
 	} else {
 		session := CO.GetSession(ctx)
 		session.Set("id", strconv.Itoa(id))
 		session.Set("username", username)
 
-		resp["mssg"] = "Hello, " + username + "!!"
-		resp["success"] = true
+		response.Msg = "Hello, " + username + "!!"
+		response.Code = models.SUCCESS
 	}
-	json(ctx, resp)
+	json(ctx, response)
 }

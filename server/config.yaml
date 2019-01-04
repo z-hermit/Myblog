@@ -1,0 +1,10 @@
+mysql:
+  dbname  : "blog"
+  host    : "127.0.0.1"
+  port    : 3306
+  user    : "root"
+  pass    : "123"
+  sslmode : "false"
+session:
+  SESSION_HASH_SECRET : "the-big-and-secret-hash-key-here"
+  SESSION_BLOCK_SECRET : "lot-secret-of-characters-big-too"

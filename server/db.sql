@@ -26,18 +26,18 @@ SET time_zone = "+00:00";
 -- Table structure for table `follow`
 --
 
-CREATE TABLE `follow` (
-  `followID` int(11) NOT NULL,
-  `followBy` int(11) NOT NULL,
-  `followTo` int(11) NOT NULL,
-  `followTime` varchar(255) NOT NULL
+CREATE TABLE `Follow` (
+  `FollowID` int(11) NOT NULL,
+  `FollowBy` int(11) NOT NULL,
+  `FollowTo` int(11) NOT NULL,
+  `FollowTime` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `follow`
+-- Dumping data for table `Follow`
 --
 
-INSERT INTO `follow` (`followID`, `followBy`, `followTo`, `followTime`) VALUES
+INSERT INTO `Follow` (`FollowID`, `FollowBy`, `FollowTo`, `FollowTime`) VALUES
 (7, 6, 5, '2017-09-25 10:15:53.957231'),
 (9, 5, 6, '2017-09-25 11:13:03.499015'),
 (10, 7, 6, '2017-09-25 15:34:00.040075'),
@@ -50,18 +50,18 @@ INSERT INTO `follow` (`followID`, `followBy`, `followTo`, `followTime`) VALUES
 -- Table structure for table `likes`
 --
 
-CREATE TABLE `likes` (
-  `likeID` int(11) NOT NULL,
-  `postID` int(11) NOT NULL,
-  `likeBy` int(11) NOT NULL,
-  `likeTime` varchar(255) NOT NULL
+CREATE TABLE `Likes` (
+  `LikeID` int(11) NOT NULL,
+  `PostID` int(11) NOT NULL,
+  `LikeBy` int(11) NOT NULL,
+  `LikeTime` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `likes`
 --
 
-INSERT INTO `likes` (`likeID`, `postID`, `likeBy`, `likeTime`) VALUES
+INSERT INTO `Likes` (`LikeID`, `PostID`, `LikeBy`, `LikeTime`) VALUES
 (6, 9, 5, '2017-09-25 16:35:50.840949'),
 (7, 9, 6, '2017-09-25 19:10:00.3598');
 
@@ -71,19 +71,19 @@ INSERT INTO `likes` (`likeID`, `postID`, `likeBy`, `likeTime`) VALUES
 -- Table structure for table `posts`
 --
 
-CREATE TABLE `posts` (
-  `postID` int(11) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `content` text NOT NULL,
-  `createdBy` int(11) NOT NULL,
-  `createdAt` varchar(255) NOT NULL
+CREATE TABLE `Posts` (
+  `PostID` int(11) NOT NULL,
+  `Title` varchar(255) NOT NULL,
+  `Content` text NOT NULL,
+  `CreatedBy` int(11) NOT NULL,
+  `CreatedAt` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `posts`
 --
 
-INSERT INTO `posts` (`postID`, `title`, `content`, `createdBy`, `createdAt`) VALUES
+INSERT INTO `Posts` (`PostID`, `Title`, `Content`, `CreatedBy`, `CreatedAt`) VALUES
 (2, 'second', 'second_content', 6, '2017-09-23 10:43:5.941602'),
 (5, 'third', 'third content..', 6, '2017-09-23 11:32:45.941602'),
 (9, 'Hello,', 'World!!', 6, '2017-09-24 19:09:37.024131'),
@@ -97,18 +97,18 @@ INSERT INTO `posts` (`postID`, `title`, `content`, `createdBy`, `createdAt`) VAL
 -- Table structure for table `profile_views`
 --
 
-CREATE TABLE `profile_views` (
-  `viewID` int(11) NOT NULL,
-  `viewBy` int(11) NOT NULL,
-  `viewTo` int(11) NOT NULL,
-  `viewTime` varchar(255) NOT NULL
+CREATE TABLE `Profile_views` (
+  `ViewID` int(11) NOT NULL,
+  `ViewBy` int(11) NOT NULL,
+  `ViewTo` int(11) NOT NULL,
+  `ViewTime` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `profile_views`
 --
 
-INSERT INTO `profile_views` (`viewID`, `viewBy`, `viewTo`, `viewTime`) VALUES
+INSERT INTO `profile_views` (`ViewID`, `ViewBy`, `ViewTo`, `ViewTime`) VALUES
 (14, 6, 5, '2017-09-25 10:49:21.373119'),
 (15, 5, 6, '2017-09-25 11:13:01.246732'),
 (16, 5, 6, '2017-09-25 11:13:03.912177'),
@@ -128,20 +128,20 @@ INSERT INTO `profile_views` (`viewID`, `viewBy`, `viewTo`, `viewTime`) VALUES
 -- Table structure for table `users`
 --
 
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
-  `username` varchar(32) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `bio` text,
-  `joined` varchar(255) NOT NULL
+CREATE TABLE `Users` (
+  `ID` int(11) NOT NULL,
+  `Username` varchar(32) NOT NULL,
+  `Email` varchar(255) NOT NULL,
+  `Password` varchar(255) NOT NULL,
+  `Bio` text,
+  `Joined` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `email`, `password`, `bio`, `joined`) VALUES
+INSERT INTO `users` (`ID`, `Username`, `Email`, `Password`, `Bio`, `Joined`) VALUES
 (5, 'takkar', 'takkar@gmail.com', '$2a$10$ttnsVDOPgMlA5vvDE33eneqVO3BHE/zif/axxI5AwNpOuRetkxFk6', '', '2017-09-23 7:02:14.941602'),
 (6, 'faiyaz', 'faiyaz@gmail.com', '$2a$10$.Wx2jBjYPiMFgWGCW.USze.qFMwrgN1TWOf50CQgqHDBzpcYV2uSa', '', '2017-09-23 1:22:41.941602'),
 (7, 'ghalib', 'ghalib@gmail.com', '$2a$10$ziw6cqTgpSBIvASZOjTheey8sQYf1iW3HW4N.Xjq4GX6faKqzIrE.', '', '2017-09-23 1:22:41.941602'),
@@ -152,34 +152,34 @@ INSERT INTO `users` (`id`, `username`, `email`, `password`, `bio`, `joined`) VAL
 --
 
 --
--- Indexes for table `follow`
+-- Indexes for table `Follow`
 --
-ALTER TABLE `follow`
-  ADD PRIMARY KEY (`followID`);
+ALTER TABLE `Follow`
+  ADD PRIMARY KEY (`FollowID`);
 
 --
 -- Indexes for table `likes`
 --
-ALTER TABLE `likes`
-  ADD PRIMARY KEY (`likeID`);
+ALTER TABLE `Likes`
+  ADD PRIMARY KEY (`LikeID`);
 
 --
 -- Indexes for table `posts`
 --
-ALTER TABLE `posts`
-  ADD PRIMARY KEY (`postID`);
+ALTER TABLE `Posts`
+  ADD PRIMARY KEY (`PostID`);
 
 --
 -- Indexes for table `profile_views`
 --
-ALTER TABLE `profile_views`
-  ADD PRIMARY KEY (`viewID`);
+ALTER TABLE `Profile_views`
+  ADD PRIMARY KEY (`ViewID`);
 
 --
 -- Indexes for table `users`
 --
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `Users`
+  ADD PRIMARY KEY (`ID`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -188,28 +188,28 @@ ALTER TABLE `users`
 --
 -- AUTO_INCREMENT for table `follow`
 --
-ALTER TABLE `follow`
-  MODIFY `followID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+ALTER TABLE `Follow`
+  MODIFY `FollowID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 --
 -- AUTO_INCREMENT for table `likes`
 --
-ALTER TABLE `likes`
-  MODIFY `likeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+ALTER TABLE `Likes`
+  MODIFY `LikeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 --
 -- AUTO_INCREMENT for table `posts`
 --
-ALTER TABLE `posts`
-  MODIFY `postID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+ALTER TABLE `Posts`
+  MODIFY `PostID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 --
 -- AUTO_INCREMENT for table `profile_views`
 --
-ALTER TABLE `profile_views`
-  MODIFY `viewID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+ALTER TABLE `Profile_views`
+  MODIFY `ViewID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 --
 -- AUTO_INCREMENT for table `users`
 --
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+ALTER TABLE `Users`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
