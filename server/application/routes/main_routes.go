@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/kataras/iris"
+	"mywork.com/Myblog/server/domain/repositories"
 )
 
 // Index route
@@ -13,38 +14,14 @@ func Index(ctx iris.Context) {
 	loggedIn(ctx, "/welcome")
 
 	id, _ := CO.AllSessions(ctx)
-	db := CO.DB()
-	var (
-		postID    int
-		title     string
-		content   string
-		createdBy int
-		createdAt string
-	)
-	feeds := []interface{}{}
 
-	stmt, _ := db.Prepare("SELECT posts.postID, posts.title, posts.content, posts.createdBy, posts.createdAt from posts, follow WHERE follow.followBy=? AND follow.followTo = posts.createdBy ORDER BY posts.postID DESC")
-	rows, qErr := stmt.Query(id)
-	CO.Err(qErr)
-
-	for rows.Next() {
-		rows.Scan(&postID, &title, &content, &createdBy, &createdAt)
-		feed := map[string]interface{}{
-			"postID":    postID,
-			"title":     title,
-			"content":   content,
-			"createdBy": createdBy,
-			"createdAt": createdAt,
-		}
-		feeds = append(feeds, feed)
-	}
-
-	ctx.JSON(feeds)
+	posts := repositories.GetpostRepository().GetRelativePost(id)
+	ctx.JSON(posts)
 }
 
 // Profile Page
 func Profile(ctx iris.Context) {
-	loggedIn(ctx, "")
+	loggedIn(ctx, "/welcome")
 
 	user := ctx.Params().Get("id")
 	sesID, _ := CO.AllSessions(ctx)

@@ -1,7 +1,9 @@
 package sqlhelper
 
 import (
+	"database/sql"
 	"github.com/kataras/iris/core/errors"
+	"github.com/spf13/viper"
 	"mywork.com/Myblog/server/infrastructure"
 	"time"
 )
@@ -48,11 +50,11 @@ func Delete(eleP interface{}, queryKey string, queryValue string) error {
 	return infrastructure.DB().Delete(eleP).Error
 }
 
-func Select(eleP interface{}, queryKey string, queryValue ...interface{}) error {
+func Select(eleAP interface{}, queryKey string, queryValue ...interface{}) error {
 	if queryKey == "" {
-		return infrastructure.DB().Find(eleP).Error
+		return infrastructure.DB().Find(eleAP).Error
 	} else {
-		return infrastructure.DB().Where(queryKey, queryValue...).Find(eleP).Error
+		return infrastructure.DB().Where(queryKey, queryValue...).Find(eleAP).Error
 	}
 	return nil
 }
@@ -66,7 +68,13 @@ func SelectOne(eleP interface{}, queryKey string, queryValue ...interface{}) err
 	return nil
 }
 
-// MakeTimestamp function
-func MakeTimestamp() int64 {
-	return time.Now().UnixNano() / (int64(time.Millisecond) / int64(time.Nanosecond))
+func DB() *sql.DB {
+	mysqlconfig := viper.GetStringMap("mysql")
+	user := mysqlconfig["user"].(string)
+	password := mysqlconfig["pass"].(string)
+	host := mysqlconfig["host"].(string)
+	_db := mysqlconfig["dbname"].(string)
+
+	db, _ := sql.Open("mysql", user+":"+password+"@tcp("+host+":3306)/"+_db)
+	return db
 }

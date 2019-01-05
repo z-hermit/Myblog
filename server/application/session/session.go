@@ -1,11 +1,12 @@
-package config
+package session
 
 import (
-	"os"
-
 	"github.com/gorilla/securecookie"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/sessions"
+	"github.com/spf13/viper"
+	"log"
+	"time"
 )
 
 var manager *sessions.Sessions
@@ -16,8 +17,8 @@ func init() {
 	// never loads because the "config" packages inits first.
 
 	var (
-		hashKey  = []byte(os.Getenv("SESSION_HASH_SECRET"))
-		blockKey = []byte(os.Getenv("SESSION_BLOCK_SECRET"))
+		hashKey  = []byte(viper.GetString("SESSION_HASH_SECRET"))
+		blockKey = []byte(viper.GetString("SESSION_BLOCK_SECRET"))
 	)
 	var secureCookie = securecookie.New(hashKey, blockKey)
 
@@ -42,4 +43,24 @@ func AllSessions(ctx iris.Context) (string, string) {
 	id := session.GetString("id")
 	username := session.GetString("username")
 	return id, username
+}
+
+// MakeTimestamp function
+func MakeTimestamp() int64 {
+	return time.Now().UnixNano() / (int64(time.Millisecond) / int64(time.Nanosecond))
+}
+
+// Err Log
+func LogErr(err interface{}) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func MeOrNot(ctx iris.Context, user string) bool {
+	id, _ := AllSessions(ctx)
+	if id != user {
+		return false
+	}
+	return true
 }

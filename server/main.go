@@ -1,20 +1,26 @@
 package main
 
 import (
-	R "github.com/iris-contrib/Iris-Mini-Social-Network/routes"
-	"os"
-
+	"fmt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/recover"
-
-	"github.com/iris-contrib/middleware/cors"
+	"github.com/spf13/viper"
+	R "mywork.com/Myblog/server/application/routes"
 )
 
 func main() {
+	viper.SetConfigName("config")    // name of config file (without extension)
+	viper.AddConfigPath("./")        // optionally look for config in the working directory
+	viper.AddConfigPath("./config/") // optionally look for config in the working directory
+	err := viper.ReadInConfig()      // Find and read the config file
+	if err != nil {                  // Handle errors reading the config file
+		fmt.Println("Fatal error config file:", err)
+		return
+	}
+
 	app := iris.New()
 	app.Use(recover.New())
 
-	app.RegisterView(iris.HTML("./views", ".html"))
 	app.StaticWeb("/", "./public")
 
 	user := app.Party("/user")
@@ -24,33 +30,23 @@ func main() {
 	}
 
 	app.Get("/", R.Index)
-	app.Get("/welcome", R.Welcome)
 	app.Get("/explore", R.Explore)
-	app.Get("/404", R.NotFound)
-	app.Get("/signup", R.Signup)
-	app.Get("/login", R.Login)
 	app.Get("/logout", R.Logout)
 	app.Get("/deactivate", R.Deactivate)
 	app.Get("/edit_profile", R.EditProfile)
 	app.Get("/create_post", R.CreatePost)
 
 	app.Get("/profile/:id", R.Profile)
-	app.Get("/profile", R.NotFound)
 
 	app.Get("/view_post/:id", R.ViewPost)
-	app.Get("/view_post", R.NotFound)
 
 	app.Get("/edit_post/:id", R.EditPost)
-	app.Get("/edit_post", R.NotFound)
 
 	app.Get("/followers/:id", R.Followers)
-	app.Get("/followers", R.NotFound)
 
 	app.Get("/followings/:id", R.Followings)
-	app.Get("/followings", R.NotFound)
 
 	app.Get("/likes/:id", R.Likes)
-	app.Get("/likes", R.NotFound)
 
 	api := app.Party("/api")
 	{
@@ -66,5 +62,5 @@ func main() {
 		api.Post("/deactivate-account", R.DeactivateAcc)
 	}
 
-	app.Run(iris.Addr(os.Getenv("PORT")))
+	app.Run(iris.Addr(viper.GetString("port")))
 }
