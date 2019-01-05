@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/kataras/iris"
+	"mywork.com/Myblog/server/domain/models"
 	"mywork.com/Myblog/server/domain/repositories"
 )
 
@@ -14,7 +15,7 @@ func Index(ctx iris.Context) {
 	loggedIn(ctx, "/welcome")
 
 	id, _ := CO.AllSessions(ctx)
-
+	models.User{}
 	posts := repositories.GetpostRepository().GetRelativePost(id)
 	ctx.JSON(posts)
 }

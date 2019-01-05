@@ -5,7 +5,6 @@ import (
 	"github.com/kataras/iris/core/errors"
 	"github.com/spf13/viper"
 	"mywork.com/Myblog/server/infrastructure"
-	"time"
 )
 
 func MigrateTable(tableP interface{}) error {

@@ -57,9 +57,9 @@ func LogErr(err interface{}) {
 	}
 }
 
-func MeOrNot(ctx iris.Context, user string) bool {
+func MeOrNot(ctx iris.Context, userId string) bool {
 	id, _ := AllSessions(ctx)
-	if id != user {
+	if id != userId {
 		return false
 	}
 	return true
