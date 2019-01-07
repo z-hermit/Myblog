@@ -38,9 +38,9 @@ func GetSession(ctx iris.Context) *sessions.Session {
 }
 
 // AllSessions function to return all the sessions
-func AllSessions(ctx iris.Context) (string, string) {
+func UserSessions(ctx iris.Context) (int, string) {
 	session := GetSession(ctx)
-	id := session.GetString("id")
+	id, _ := session.GetInt("id")
 	username := session.GetString("username")
 	return id, username
 }
@@ -57,8 +57,8 @@ func LogErr(err interface{}) {
 	}
 }
 
-func MeOrNot(ctx iris.Context, userId string) bool {
-	id, _ := AllSessions(ctx)
+func MeOrNot(ctx iris.Context, userId int) bool {
+	id, _ := UserSessions(ctx)
 	if id != userId {
 		return false
 	}

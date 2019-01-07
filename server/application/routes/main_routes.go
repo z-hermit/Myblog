@@ -1,125 +1,76 @@
 package routes
 
 import (
-	CO "github.com/iris-contrib/Iris-Mini-Social-Network/config"
 	"strconv"
-	"time"
 
+	"fmt"
 	"github.com/kataras/iris"
+	"mywork.com/Myblog/server/application/session"
 	"mywork.com/Myblog/server/domain/models"
-	"mywork.com/Myblog/server/domain/repositories"
+	"mywork.com/Myblog/server/infrastructure/datamodels"
+	"mywork.com/Myblog/server/infrastructure/sqlhelper"
 )
 
 // Index route
 func Index(ctx iris.Context) {
 	loggedIn(ctx, "/welcome")
 
-	id, _ := CO.AllSessions(ctx)
-	models.User{}
-	posts := repositories.GetpostRepository().GetRelativePost(id)
-	ctx.JSON(posts)
+	id, _ := session.UserSessions(ctx)
+	user := models.User{}
+	user.ID = id
+	posts := user.GetRelativePost()
+	json(ctx, models.SUCCESS, "success", posts)
 }
 
 // Profile Page
 func Profile(ctx iris.Context) {
 	loggedIn(ctx, "/welcome")
 
-	user := ctx.Params().Get("id")
-	sesID, _ := CO.AllSessions(ctx)
-	db := CO.DB()
+	uid, err := ctx.Params().GetInt("id")
+	if err != nil {
+		fmt.Println(err)
+	}
+	sid, _ := session.UserSessions(ctx)
 
-	// VARS FOR USER DETAILS
-	var (
-		userCount int
-		userID    int
-		username  string
-		email     string
-		bio       string
-	)
+	me := session.MeOrNot(ctx, uid) // Check if its me or not
+	var noMssg string               // Mssg to be displayed when user has no posts
 
-	// VARS FOR POSTS
-	var (
-		postID    int
-		title     string
-		content   string
-		createdBy int
-		createdAt string
-	)
-	posts := []interface{}{}
-
-	var (
-		followers  int //for followers
-		followings int //for followings
-		pViews     int // for profile views
-	)
-
-	me := CO.MeOrNot(ctx, user) // Check if its me or not
-	var noMssg string           // Mssg to be displayed when user has no posts
+	// VIEW PROFILE
+	user := models.GetUser(uid)
+	user.Update()
 
 	if me == true {
 		noMssg = "You have no posts. Go ahead and create one!!"
 	} else {
-		noMssg = username + " has no posts!!"
+		noMssg = user.Username + " has no posts!!"
 
-		// VIEW PROFILE
-		if sesID != "" {
-			stmt, _ := db.Prepare("INSERT INTO profile_views(viewBy, viewTo, viewTime) VALUES(?, ?, ?)")
-			_, pvErr := stmt.Exec(sesID, user, time.Now())
-			CO.Err(pvErr)
+		if sid != 0 {
+			profileView := models.ProfileView{datamodels.ProfileView{ViewBy: sid, ViewTo: uid}}
+			err := sqlhelper.Insert(&profileView)
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
-
 	}
 
-	// USER DETAILS
-	db.QueryRow("SELECT COUNT(id) AS userCount, id AS userID, username, email, bio FROM users WHERE id=?", user).Scan(&userCount, &userID, &username, &email, &bio)
-	invalid(ctx, userCount)
+	//followings := []models.Follow{}
+	//sqlhelper.Select(&followings, "followBy=?", uid)
 
-	// POSTS
-	stmt, sErr := db.Prepare("SELECT * FROM posts WHERE createdBy=? ORDER BY postID DESC")
-	CO.Err(sErr)
-	rows, gErr := stmt.Query(userID)
-	CO.Err(gErr)
-
-	for rows.Next() {
-		rows.Scan(&postID, &title, &content, &createdBy, &createdAt)
-		post := map[string]interface{}{
-			"postID":    postID,
-			"title":     title,
-			"content":   content,
-			"createdBy": createdBy,
-			"createdAt": createdAt,
-		}
-		posts = append(posts, post)
-	}
-
-	db.QueryRow("SELECT COUNT(followID) AS followers FROM follow WHERE followTo=?", user).Scan(&followers)  // FOLLOWERS
-	db.QueryRow("SELECT COUNT(followID) AS followers FROM follow WHERE followBy=?", user).Scan(&followings) // FOLLOWINGS
-	db.QueryRow("SELECT COUNT(viewID) AS pViews FROM profile_views WHERE viewTo=?", user).Scan(&pViews)     // PROFILE VIEWS
-
-	renderTemplate(ctx, "profile", iris.Map{
-		"title":   "@" + username,
+	json(ctx, models.SUCCESS, "profile", iris.Map{
+		"title":   "@" + user.Username,
 		"session": ses(ctx),
-		"user": iris.Map{
-			"id":       strconv.Itoa(userID),
-			"username": username,
-			"email":    email,
-			"bio":      bio,
-		},
-		"posts":      posts,
-		"followers":  followers,
-		"followings": followings,
-		"views":      pViews,
-		"no_mssg":    noMssg,
-		"GET":        CO.Get,
-		"isF":        CO.IsFollowing,
+		"user":    user,
+		"no_mssg": noMssg,
+		"isF":     models.IsFollowing(sid, uid),
 	})
 
 }
 
 // Explore route
 func Explore(ctx iris.Context) {
-	loggedIn(ctx, "")
-	user, _ := CO.AllSessions(ctx)
+	loggedIn(ctx, "/welcome")
+	user, _ := session.UserSessions(ctx)
+
 	db := CO.DB()
 	var (
 		id       int
@@ -127,20 +78,6 @@ func Explore(ctx iris.Context) {
 		email    string
 	)
 	explore := []interface{}{}
-
-	stmt, _ := db.Prepare("SELECT id, username, email FROM users WHERE id <> ? ORDER BY RAND() LIMIT 10")
-	rows, err := stmt.Query(user)
-	CO.Err(err)
-
-	for rows.Next() {
-		rows.Scan(&id, &username, &email)
-		exp := map[string]interface{}{
-			"id":       id,
-			"username": username,
-			"email":    email,
-		}
-		explore = append(explore, exp)
-	}
 
 	renderTemplate(ctx, "explore", iris.Map{
 		"title":   "Explore",

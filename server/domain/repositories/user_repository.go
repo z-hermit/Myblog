@@ -27,3 +27,9 @@ func (re userRepository) Get(id interface{}) models.User {
 	sqlhelper.SelectOne(&user, "id", id)
 	return user
 }
+
+func (re userRepository) GetRandom(id int, limit int) []models.User {
+	users := []models.User{}
+	sqlhelper.SelectRandom(&users, limit, "WHERE id <> ?", id)
+	return users
+}

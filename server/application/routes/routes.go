@@ -5,6 +5,7 @@ import (
 
 	"github.com/kataras/iris"
 	"golang.org/x/crypto/bcrypt"
+	"mywork.com/Myblog/server/domain/models"
 )
 
 func hash(password string) []byte {
@@ -13,9 +14,8 @@ func hash(password string) []byte {
 	return hash
 }
 
-func json(ctx iris.Context, data interface{}) {
-	ctx.StatusCode(iris.StatusOK)
-	ctx.JSON(data)
+func json(ctx iris.Context, code int, msg string, data interface{}) {
+	ctx.JSON(models.JsonResponse{code, msg, data})
 }
 
 func ses(ctx iris.Context) interface{} {

@@ -13,6 +13,22 @@ type User struct {
 	likes     []int
 }
 
+type u interface {
+	Update()
+}
+
+func fff() {
+	var test u = &User{}
+	test.Update()
+	User{}.Update()
+}
+
+func GetUser(id int) User {
+	user := User{}
+	user.ID = id
+	return user
+}
+
 func (u *User) Update() {
 	sqlhelper.Select(u, "id=?", u.ID)
 
@@ -42,7 +58,7 @@ func (u User) CountOfFollow() int {
 	return len(follows)
 }
 
-func (u User) IsFollowing(by string, to string) bool {
+func IsFollowing(by int, to int) bool {
 	follow := Follow{}
 	sqlhelper.SelectOne(&follow, "follow_by=?, follow_to", by, to)
 	if follow.ID == 0 {

@@ -58,6 +58,15 @@ func Select(eleAP interface{}, queryKey string, queryValue ...interface{}) error
 	return nil
 }
 
+func SelectRandom(eleAP interface{}, limit int, queryKey string, queryValue ...interface{}) error {
+	if queryKey == "" {
+		return infrastructure.DB().Limit(limit).Set("gorm:query_option", "ORDER BY RAND()").Find(eleAP).Error
+	} else {
+		return infrastructure.DB().Limit(limit).Set("gorm:query_option", "ORDER BY RAND()").Where(queryKey, queryValue...).Find(eleAP).Error
+	}
+	return nil
+}
+
 func SelectOne(eleP interface{}, queryKey string, queryValue ...interface{}) error {
 	if queryKey == "" {
 		return infrastructure.DB().First(eleP).Error
