@@ -8,6 +8,6 @@ type User struct {
 	gorm.Model
 	Username string `json:"username"`
 	Email    string `json:"email"`
-	Password string `json:"password"`
+	Password []byte `json:"-"`
 	Bio      string `json:"bio"`
 }

@@ -1,24 +1,22 @@
 package routes
 
 import (
-	CO "github.com/iris-contrib/Iris-Mini-Social-Network/config"
-	"os"
-	"strconv"
-	"time"
-
 	"fmt"
 	"github.com/badoux/checkmail"
 	"github.com/kataras/iris"
 	"golang.org/x/crypto/bcrypt"
+	"mywork.com/Myblog/server/application/session"
 	"mywork.com/Myblog/server/domain/models"
-	"mywork.com/Myblog/server/infrastructure"
+	"mywork.com/Myblog/server/infrastructure/datamodels"
+	"mywork.com/Myblog/server/infrastructure/sqlhelper"
+	"os"
+	"strconv"
 )
 
 // Logout route
 func Logout(ctx iris.Context) {
 	loggedIn(ctx, "")
-	session := CO.GetSession(ctx)
-	session.Destroy()
+	session.DestorySession(ctx)
 	// or
 	// session.Delete("id")
 	// session.Delete("username")
@@ -42,8 +40,8 @@ func UserSignup(ctx iris.Context) {
 	)
 
 	response.Code = models.FAIL
-	infrastructure.SelectOne("COUNT(id) AS userCount", "User", "Username", username).Scan(&userCount)
-	infrastructure.SelectOne("COUNT(id) AS emailCount", "User", "Email", email).Scan(&emailCount)
+	userCount = sqlhelper.Count("User", "username=?", username)
+	emailCount = sqlhelper.Count("User", "email=?", email)
 
 	if username == "" || email == "" || password == "" || passwordAgain == "" {
 		response.Msg = "Some values are missing!!"
@@ -58,30 +56,33 @@ func UserSignup(ctx iris.Context) {
 	} else if emailCount > 0 {
 		response.Msg = "Email already exists!!"
 	} else {
+		user := datamodels.User{Username: username, Email: email, Password: hash(password)}
+		v, err := sqlhelper.Insert(&user)
+		if err != nil {
+			session.LogErr(err)
+			json(ctx, models.FAIL, "", nil)
+		}
 
-		rs, err := infrastructure.Insert("User", username, email, hash(password), time.Now())
-		CO.Err(err)
-		insertID, _ := rs.LastInsertId()
-		insStr := strconv.FormatInt(insertID, 10)
+		lastUser := v.(datamodels.User)
+		insStr := strconv.Itoa(lastUser.ID)
 
 		dir, _ := os.Getwd()
 		userPath := dir + "/public/users/" + insStr
 
 		dirErr := os.Mkdir(userPath, 0655)
-		CO.Err(dirErr)
+		session.LogErr(dirErr)
 
 		linkErr := os.Link(dir+"/public/images/golang.png", userPath+"/avatar.png")
-		CO.Err(linkErr)
+		session.LogErr(linkErr)
 
-		session := CO.GetSession(ctx)
-		session.Set("id", insStr)
-		session.Set("username", username)
+		session.SetSession(ctx, "id", lastUser.ID)
+		session.SetSession(ctx, "username", username)
 
 		response.Msg = "Hello, " + username + "!!"
 		response.Code = models.SUCCESS
 
 	}
-	json(ctx, response)
+	json(ctx, response.Code, response.Msg, nil)
 }
 
 // UserLogin function to log user in
@@ -91,17 +92,14 @@ func UserLogin(ctx iris.Context) {
 	rpassword := ctx.PostValueTrim("password")
 
 	var (
-		id       int
-		username string
-		password string
 		response models.JsonResponse
 	)
 
 	response.Code = models.FAIL
+	user := datamodels.User{}
+	sqlhelper.SelectOne(&user, "username=?", rusername)
 
-	infrastructure.SelectOne("id, username, password", "User", "Username", rusername).Scan(&id, &username, &password)
-
-	err := bcrypt.CompareHashAndPassword([]byte(password), []byte(rpassword))
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(rpassword))
 	fmt.Println(err)
 	if rusername == "" || rpassword == "" {
 		response.Msg = "Some values are missing!!"
@@ -110,12 +108,11 @@ func UserLogin(ctx iris.Context) {
 	} else if err != nil {
 		response.Msg = "Invalid password!!"
 	} else {
-		session := CO.GetSession(ctx)
-		session.Set("id", strconv.Itoa(id))
-		session.Set("username", username)
+		session.SetSession(ctx, "id", user.ID)
+		session.SetSession(ctx, "username", user.Username)
 
-		response.Msg = "Hello, " + username + "!!"
+		response.Msg = "Hello, " + user.Username + "!!"
 		response.Code = models.SUCCESS
 	}
-	json(ctx, response)
+	json(ctx, response.Code, response.Msg, nil)
 }

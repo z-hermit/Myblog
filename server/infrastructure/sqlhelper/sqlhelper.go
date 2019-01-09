@@ -2,6 +2,7 @@ package sqlhelper
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/kataras/iris/core/errors"
 	"github.com/spf13/viper"
 	"mywork.com/Myblog/server/infrastructure"
@@ -16,15 +17,14 @@ func CreateTable(tableName string, tableP interface{}) error {
 }
 
 //params 按照字典序传入
-func Insert(eleP interface{}) error {
+func Insert(eleP interface{}) (interface{}, error) {
 	if infrastructure.DB().NewRecord(eleP) {
-		return infrastructure.DB().Create(eleP).Error
-	} else {
-		//TODO log
-		return infrastructure.DB().Set("gorm:insert_option", "ON CONFLICT REPLACE").Create(eleP).Error
+		result := infrastructure.DB().Create(eleP)
+		return result.Value, result.Error
 	}
-
-	return nil
+	//TODO log
+	result := infrastructure.DB().Set("gorm:insert_option", "ON CONFLICT REPLACE").Create(eleP)
+	return result.Value, result.Error
 }
 
 func Save(eleP interface{}) {
@@ -65,6 +65,13 @@ func SelectRandom(eleAP interface{}, limit int, queryKey string, queryValue ...i
 		return infrastructure.DB().Limit(limit).Set("gorm:query_option", "ORDER BY RAND()").Where(queryKey, queryValue...).Find(eleAP).Error
 	}
 	return nil
+}
+
+func Count(table string, queryKey string, queryValue ...interface{}) int {
+	var count int
+	sql := fmt.Sprintf("SELECT COUNT(*) AS count FROM %s WHERE %s", table, queryKey)
+	DB().QueryRow(sql, queryValue).Scan(&count)
+	return count
 }
 
 func SelectOne(eleP interface{}, queryKey string, queryValue ...interface{}) error {

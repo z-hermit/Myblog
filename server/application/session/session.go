@@ -57,6 +57,15 @@ func LogErr(err interface{}) {
 	}
 }
 
+func SetSession(ctx iris.Context, key string, value interface{}) {
+	session := GetSession(ctx)
+	session.Set(key, value)
+}
+
+func DestorySession(ctx iris.Context) {
+	manager.Start(ctx).Destroy()
+}
+
 func MeOrNot(ctx iris.Context, userId int) bool {
 	id, _ := UserSessions(ctx)
 	if id != userId {

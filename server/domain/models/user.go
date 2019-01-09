@@ -13,16 +13,6 @@ type User struct {
 	likes     []int
 }
 
-type u interface {
-	Update()
-}
-
-func fff() {
-	var test u = &User{}
-	test.Update()
-	User{}.Update()
-}
-
 func GetUser(id int) User {
 	user := User{}
 	user.ID = id
@@ -65,6 +55,14 @@ func IsFollowing(by int, to int) bool {
 		return false
 	}
 	return true
+}
+
+func CountofFollow(id int) int {
+
+	var followersCount int
+	sqlhelper.DB().QueryRow("SELECT COUNT(followID) AS followersCount FROM follow WHERE followTo=?", id).Scan(&followersCount)
+	return followersCount
+
 }
 
 func (u User) GetRelativePost() []Post {

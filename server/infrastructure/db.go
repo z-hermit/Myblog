@@ -15,7 +15,7 @@ func DB() *gorm.DB {
 	password := mysqlconfig["pass"].(string)
 	host := mysqlconfig["host"].(string)
 	_db := mysqlconfig["dbname"].(string)
-	db, err := gorm.Open("mysql", user+":"+password+"@tcp("+host+":3306)/"+_db)
+	db, err := gorm.Open("mysql", user+":"+password+"@tcp("+host+":3306)/"+_db+"?charset=utf8&parseTime=true&loc=Local")
 	if err != nil {
 		fmt.Println(err)
 	}

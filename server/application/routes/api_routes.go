@@ -1,45 +1,45 @@
 package routes
 
 import (
-	CO "github.com/iris-contrib/Iris-Mini-Social-Network/config"
 	"os"
 	"time"
 
 	"github.com/badoux/checkmail"
 	"github.com/kataras/iris"
+	"mywork.com/Myblog/server/application/session"
+	"mywork.com/Myblog/server/domain/models"
+	"mywork.com/Myblog/server/infrastructure/sqlhelper"
+	"strconv"
 )
 
 // CreateNewPost route
 func CreateNewPost(ctx iris.Context) {
-
 	title := ctx.PostValueTrim("title")
 	content := ctx.PostValueTrim("content")
-	id, _ := CO.AllSessions(ctx)
-
-	db := CO.DB()
+	id, _ := session.UserSessions(ctx)
+	db := sqlhelper.DB()
 
 	stmt, _ := db.Prepare("INSERT INTO posts(title, content, createdBy, createdAt) VALUES (?, ?, ?, ?)")
 	rs, iErr := stmt.Exec(title, content, id, time.Now())
-	CO.Err(iErr)
-
+	session.LogErr(iErr)
 	insertID, _ := rs.LastInsertId()
 
 	resp := map[string]interface{}{
 		"postID": insertID,
 		"mssg":   "Post Created!!",
 	}
-	json(ctx, resp)
+	json(ctx, models.SUCCESS, "", resp)
 }
 
 // DeletePost route
 func DeletePost(ctx iris.Context) {
 	post := ctx.FormValue("post")
-	db := CO.DB()
+	db := sqlhelper.DB()
 
 	_, dErr := db.Exec("DELETE FROM posts WHERE postID=?", post)
-	CO.Err(dErr)
+	session.LogErr(dErr)
 
-	json(ctx, map[string]interface{}{
+	json(ctx, models.SUCCESS, "", map[string]interface{}{
 		"mssg": "Post Deleted!!",
 	})
 }
@@ -50,10 +50,10 @@ func UpdatePost(ctx iris.Context) {
 	title := ctx.PostValue("title")
 	content := ctx.PostValue("content")
 
-	db := CO.DB()
+	db := sqlhelper.DB()
 	db.Exec("UPDATE posts SET title=?, content=? WHERE postID=?", title, content, postID)
 
-	json(ctx, map[string]interface{}{
+	json(ctx, models.SUCCESS, "", map[string]interface{}{
 		"mssg": "Post Updated!!",
 	})
 }
@@ -62,13 +62,13 @@ func UpdatePost(ctx iris.Context) {
 func UpdateProfile(ctx iris.Context) {
 	resp := make(map[string]interface{})
 
-	id, _ := CO.AllSessions(ctx)
+	id, _ := session.UserSessions(ctx)
 	username := ctx.PostValueTrim("username")
 	email := ctx.PostValueTrim("email")
 	bio := ctx.PostValueTrim("bio")
 
 	mailErr := checkmail.ValidateFormat(email)
-	db := CO.DB()
+	db := sqlhelper.DB()
 
 	if username == "" || email == "" {
 		resp["mssg"] = "Some values are missing!!"
@@ -76,28 +76,28 @@ func UpdateProfile(ctx iris.Context) {
 		resp["mssg"] = "Invalid email format!!"
 	} else {
 		_, iErr := db.Exec("UPDATE users SET username=?, email=?, bio=? WHERE id=?", username, email, bio, id)
-		CO.Err(iErr)
+		session.LogErr(iErr)
 
-		session := CO.GetSession(ctx)
+		session := session.GetSession(ctx)
 		session.Set("username", username)
 
 		resp["mssg"] = "Profile updated!!"
 		resp["success"] = true
 	}
 
-	json(ctx, resp)
+	json(ctx, models.SUCCESS, "", resp)
 }
 
 // ChangeAvatar route
 func ChangeAvatar(ctx iris.Context) {
 	resp := make(map[string]interface{})
-	id, _ := CO.AllSessions(ctx)
+	id, _ := session.UserSessions(ctx)
 
 	dir, _ := os.Getwd()
-	dest := dir + "/public/users/" + id + "/avatar.png"
+	dest := dir + "/public/users/" + strconv.Itoa(id) + "/avatar.png"
 
 	dErr := os.Remove(dest)
-	CO.Err(dErr)
+	session.LogErr(dErr)
 
 	// avatar key of post form file, but let's grab all of them,
 	// the `ctx.FormFile` can be used to manually upload files per post key to the server.
@@ -110,52 +110,46 @@ func ChangeAvatar(ctx iris.Context) {
 		resp["success"] = true
 	}
 
-	json(ctx, resp)
+	json(ctx, models.SUCCESS, "", resp)
 }
 
 // Follow route
 func Follow(ctx iris.Context) {
-	id, _ := CO.AllSessions(ctx)
+	id, _ := session.UserSessions(ctx)
 	user := ctx.PostValue("user")
-	username := CO.Get(user, "username")
 
-	db := CO.DB()
+	db := sqlhelper.DB()
 	stmt, _ := db.Prepare("INSERT INTO follow(followBy, followTo, followTime) VALUES(?, ?, ?)")
 	_, exErr := stmt.Exec(id, user, time.Now())
-	CO.Err(exErr)
+	session.LogErr(exErr)
 
-	json(ctx, iris.Map{
-		"mssg": "Followed " + username + "!!",
-	})
+	json(ctx, models.SUCCESS, "", nil)
 }
 
 // Unfollow route
 func Unfollow(ctx iris.Context) {
-	id, _ := CO.AllSessions(ctx)
+	id, _ := session.UserSessions(ctx)
 	user := ctx.PostValue("user")
-	username := CO.Get(user, "username")
 
-	db := CO.DB()
+	db := sqlhelper.DB()
 	stmt, _ := db.Prepare("DELETE FROM follow WHERE followBy=? AND followTo=?")
 	_, dErr := stmt.Exec(id, user)
-	CO.Err(dErr)
+	session.LogErr(dErr)
 
-	json(ctx, iris.Map{
-		"mssg": "Unfollowed " + username + "!!",
-	})
+	json(ctx, models.SUCCESS, "", nil)
 }
 
 // Like post route
 func Like(ctx iris.Context) {
 	post := ctx.PostValue("post")
-	db := CO.DB()
-	id, _ := CO.AllSessions(ctx)
+	db := sqlhelper.DB()
+	id, _ := session.UserSessions(ctx)
 
 	stmt, _ := db.Prepare("INSERT INTO likes(postID, likeBy, likeTime) VALUES (?, ?, ?)")
 	_, err := stmt.Exec(post, id, time.Now())
-	CO.Err(err)
+	session.LogErr(err)
 
-	json(ctx, iris.Map{
+	json(ctx, models.SUCCESS, "", iris.Map{
 		"mssg": "Post Liked!!",
 	})
 }
@@ -163,23 +157,22 @@ func Like(ctx iris.Context) {
 // Unlike post route
 func Unlike(ctx iris.Context) {
 	post := ctx.PostValue("post")
-	id, _ := CO.AllSessions(ctx)
-	db := CO.DB()
+	id, _ := session.UserSessions(ctx)
+	db := sqlhelper.DB()
 
 	stmt, _ := db.Prepare("DELETE FROM likes WHERE postID=? AND likeBy=?")
 	_, err := stmt.Exec(post, id)
-	CO.Err(err)
+	session.LogErr(err)
 
-	json(ctx, iris.Map{
+	json(ctx, models.SUCCESS, "", iris.Map{
 		"mssg": "Post Unliked!!",
 	})
 }
 
 // DeactivateAcc route post method
 func DeactivateAcc(ctx iris.Context) {
-	session := CO.GetSession(ctx)
-	id, _ := CO.AllSessions(ctx)
-	db := CO.DB()
+	id, _ := session.UserSessions(ctx)
+	db := sqlhelper.DB()
 	var postID int
 
 	db.Exec("DELETE FROM profile_views WHERE viewBy=?", id)
@@ -198,17 +191,17 @@ func DeactivateAcc(ctx iris.Context) {
 	db.Exec("DELETE FROM users WHERE id=?", id)
 
 	dir, _ := os.Getwd()
-	userPath := dir + "/public/users/" + id
+	userPath := dir + "/public/users/" + strconv.Itoa(id)
 
 	rmErr := os.RemoveAll(userPath)
-	CO.Err(rmErr)
+	session.LogErr(rmErr)
 
 	// session.Delete("id")
 	// session.Delete("username")
 	// or
-	session.Destroy()
+	session.DestorySession(ctx)
 
-	json(ctx, iris.Map{
+	json(ctx, models.SUCCESS, "", iris.Map{
 		"mssg": "Deactivated your account!!",
 	})
 }

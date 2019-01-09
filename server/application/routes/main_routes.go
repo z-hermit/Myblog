@@ -70,8 +70,7 @@ func Profile(ctx iris.Context) {
 func Explore(ctx iris.Context) {
 	loggedIn(ctx, "/welcome")
 	user, _ := session.UserSessions(ctx)
-
-	db := CO.DB()
+	db := sqlhelper.DB()
 	var (
 		id       int
 		username string
@@ -79,22 +78,25 @@ func Explore(ctx iris.Context) {
 	)
 	explore := []interface{}{}
 
-	renderTemplate(ctx, "explore", iris.Map{
+	stmt, _ := db.Prepare("SELECT id, username, email FROM users WHERE id <> ? ORDER BY RAND() LIMIT 10")
+	rows, err := stmt.Query(user)
+	session.LogErr(err)
+
+	for rows.Next() {
+		rows.Scan(&id, &username, &email)
+		exp := map[string]interface{}{
+			"id":       id,
+			"username": username,
+			"email":    email,
+		}
+		explore = append(explore, exp)
+	}
+
+	json(ctx, models.SUCCESS, "explore", iris.Map{
 		"title":   "Explore",
 		"session": ses(ctx),
 		"users":   explore,
-		"GET":     CO.Get,
-		"noF":     CO.NoOfFollowers,
-		"UD":      CO.UsernameDecider,
-	})
-}
-
-// CreatePost route
-func CreatePost(ctx iris.Context) {
-	loggedIn(ctx, "")
-	renderTemplate(ctx, "create_post", iris.Map{
-		"title":   "Create Post",
-		"session": ses(ctx),
+		"countF":  models.CountofFollow(user),
 	})
 }
 
@@ -103,7 +105,7 @@ func ViewPost(ctx iris.Context) {
 	loggedIn(ctx, "")
 
 	param := ctx.Params().Get("id")
-	db := CO.DB()
+	db := sqlhelper.DB()
 	var (
 		postCount int
 		postID    int
@@ -121,7 +123,9 @@ func ViewPost(ctx iris.Context) {
 	// likes
 	db.QueryRow("SELECT COUNT(likeID) AS likesCount FROM likes WHERE postID=?", param).Scan(&likesCount)
 
-	renderTemplate(ctx, "view_post", iris.Map{
+	id, _ := session.UserSessions(ctx)
+	user := models.GetUser(id)
+	json(ctx, models.SUCCESS, "view_post", iris.Map{
 		"title":   "View Post",
 		"session": ses(ctx),
 		"post": iris.Map{
@@ -132,7 +136,7 @@ func ViewPost(ctx iris.Context) {
 			"createdAt": createdAt,
 		},
 		"postCreatedBy": strconv.Itoa(createdBy),
-		"lon":           CO.LikedOrNot,
+		"lon":           user.LikeOrNot(postID),
 		"likes":         likesCount,
 	})
 }
@@ -142,7 +146,7 @@ func EditPost(ctx iris.Context) {
 	loggedIn(ctx, "")
 
 	post := ctx.Params().Get("id")
-	db := CO.DB()
+	db := sqlhelper.DB()
 	var (
 		postCount int
 		postID    int
@@ -153,7 +157,7 @@ func EditPost(ctx iris.Context) {
 	db.QueryRow("SELECT COUNT(postID) AS postCount, postID, title, content FROM posts WHERE postID=?", post).Scan(&postCount, &postID, &title, &content)
 	invalid(ctx, postCount)
 
-	renderTemplate(ctx, "edit_post", iris.Map{
+	json(ctx, models.SUCCESS, "edit_post", iris.Map{
 		"title":   "Edit Post",
 		"session": ses(ctx),
 		"post": iris.Map{
@@ -168,15 +172,15 @@ func EditPost(ctx iris.Context) {
 func EditProfile(ctx iris.Context) {
 	loggedIn(ctx, "")
 
-	db := CO.DB()
-	id, _ := CO.AllSessions(ctx)
+	db := sqlhelper.DB()
+	id, _ := session.UserSessions(ctx)
 	var (
 		email  string
 		bio    string
 		joined string
 	)
 	db.QueryRow("SELECT email, bio, joined FROM users WHERE id=?", id).Scan(&email, &bio, &joined)
-	renderTemplate(ctx, "edit_profile", iris.Map{
+	json(ctx, models.SUCCESS, "edit_profile", iris.Map{
 		"title":   "Edit Profile",
 		"session": ses(ctx),
 		"email":   email,
@@ -189,17 +193,14 @@ func EditProfile(ctx iris.Context) {
 func Followers(ctx iris.Context) {
 	loggedIn(ctx, "")
 
-	user := ctx.Params().Get("id")
-	username := CO.Get(user, "username")
-	db := CO.DB()
+	user, _ := ctx.Params().GetInt("id")
+	db := sqlhelper.DB()
 	var followBy int
 	followers := []interface{}{}
-	me := CO.MeOrNot(ctx, user)
-	var noMssg string
 
 	stmt, _ := db.Prepare("SELECT followBy FROM follow WHERE followTo=? ORDER BY followID DESC")
 	rows, fErr := stmt.Query(user)
-	CO.Err(fErr)
+	session.LogErr(fErr)
 
 	for rows.Next() {
 		rows.Scan(&followBy)
@@ -209,20 +210,9 @@ func Followers(ctx iris.Context) {
 		followers = append(followers, f)
 	}
 
-	if me == true {
-		noMssg = "You"
-	} else {
-		noMssg = username
-	}
-
-	renderTemplate(ctx, "followers", iris.Map{
-		"title":     username + "'s Followers",
+	json(ctx, models.SUCCESS, "followers", iris.Map{
 		"session":   ses(ctx),
 		"followers": followers,
-		"no_mssg":   noMssg + " have no followers!!",
-		"GET":       CO.Get,
-		"UD":        CO.UsernameDecider,
-		"noF":       CO.NoOfFollowers,
 	})
 }
 
@@ -231,16 +221,14 @@ func Followings(ctx iris.Context) {
 	loggedIn(ctx, "")
 
 	user := ctx.Params().Get("id")
-	username := CO.Get(user, "username")
-	db := CO.DB()
+	db := sqlhelper.DB()
 	var followTo int
 	followings := []interface{}{}
-	me := CO.MeOrNot(ctx, user)
 	var noMssg string
 
 	stmt, _ := db.Prepare("SELECT followTo FROM follow WHERE followBy=? ORDER BY followID DESC")
 	rows, fErr := stmt.Query(user)
-	CO.Err(fErr)
+	session.LogErr(fErr)
 
 	for rows.Next() {
 		rows.Scan(&followTo)
@@ -250,20 +238,10 @@ func Followings(ctx iris.Context) {
 		followings = append(followings, f)
 	}
 
-	if me == true {
-		noMssg = "You"
-	} else {
-		noMssg = username
-	}
-
-	renderTemplate(ctx, "followings", iris.Map{
-		"title":      username + "'s Followings",
+	json(ctx, models.SUCCESS, "followings", iris.Map{
 		"session":    ses(ctx),
 		"followings": followings,
 		"no_mssg":    noMssg + " have no followings!!",
-		"GET":        CO.Get,
-		"UD":         CO.UsernameDecider,
-		"noF":        CO.NoOfFollowers,
 	})
 }
 
@@ -272,7 +250,7 @@ func Likes(ctx iris.Context) {
 	loggedIn(ctx, "")
 
 	post := ctx.Params().Get("id")
-	db := CO.DB()
+	db := sqlhelper.DB()
 	var postCount int
 	var likeBy int
 	likes := []interface{}{}
@@ -282,7 +260,7 @@ func Likes(ctx iris.Context) {
 
 	stmt, _ := db.Prepare("SELECT likeBy FROM likes WHERE postID=?")
 	rows, err := stmt.Query(post)
-	CO.Err(err)
+	session.LogErr(err)
 
 	for rows.Next() {
 		rows.Scan(&likeBy)
@@ -292,20 +270,9 @@ func Likes(ctx iris.Context) {
 		likes = append(likes, l)
 	}
 
-	renderTemplate(ctx, "likes", iris.Map{
+	json(ctx, models.SUCCESS, "likes", iris.Map{
 		"title":   "Likes",
 		"session": ses(ctx),
 		"likes":   likes,
-		"GET":     CO.Get,
-		"UD":      CO.UsernameDecider,
-		"noF":     CO.NoOfFollowers,
-	})
-}
-
-// Deactivate route
-func Deactivate(ctx iris.Context) {
-	renderTemplate(ctx, "deactivate", iris.Map{
-		"title":   "Deactivate your acount",
-		"session": ses(ctx),
 	})
 }
