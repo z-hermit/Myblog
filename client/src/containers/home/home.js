@@ -32,12 +32,12 @@ class home extends Component {
     console.log("home render");
 
     return (
-      <div class="notes_wrapper">
-        <div class="home">
+      <div className="notes_wrapper">
+        <div className="home">
 
-          <div class="home_info">
+          <div className="home_info">
             <span>{`${post.length} Notes`}</span>
-            <a href="/create_post" class="pri_btn">{'Create Post'}</a>
+            <a href="/create_post" className="pri_btn">{'Create Post'}</a>
           </div>
 
           {

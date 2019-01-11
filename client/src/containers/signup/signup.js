@@ -33,8 +33,9 @@ class signup extends Component {
         console.log(err)
       } else {
         console.log('Received values of form: ', values);
-        this.props.signupRequest(values.username, values.password, values.email, "");
-        //TODO
+        this.props.signupRequest(values.username, values.password, values.email, function (response) {
+          // body...
+        });
       }
     });
   }
@@ -178,7 +179,7 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => ({
-  signupRequest: (username, password, email, avatarPath) => dispatch(actions.set(username, password, "man", email, avatarPath))
+  signupRequest: (username, password, email, callback) => dispatch(actions.signup(callback)(username, password, email))
 })
 
 export default connect(

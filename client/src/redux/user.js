@@ -48,31 +48,24 @@ export const actions = {
       email,
       avatarPath
     }),
-  signup: (callback) => (username, email, password, password_again) => {
+  signup: (callback) => (username, password, email) => (dispatch) => {
+    let param = new URLSearchParams();
+    param.append("username", username);
+    param.append("email", email);
+    param.append("password", password);
+    console.log(callback)
     Axios({
       method: "POST",
-      url: "api/signup",
-      data: {
-        username,
-        email,
-        password,
-        password_again
-      }
+      url: "user/signup",
+      data: param
     })
     .then(response => {
-      // let { mssg, success } = response.data
-      // if (success) {
-      //   Notify({ value: mssg, done: () => location.href = redirect })
-      //   btn.attr('value', 'Redirecting..')
-      //   overlay2.show()
-      // } else {
-      //   Notify({ value: mssg })
-      //   btn
-      //     .attr('value', defBtnValue)
-      //     .removeClass('a_disabled')
-      //   overlay2.hide()
-      // }
-      callback(response)
+      let data = response.data;
+      console.log(data)
+      if (data.code === 200) {
+        dispatch(actions.set(data.username, data.password, "", data.email, ""));
+        callback(response.data);
+      }
     })
     .catch(error => {
       console.log(error);
@@ -92,7 +85,7 @@ export const actions = {
   login: (callback) => (username, password) => {
     Axios({
       method: "POST",
-      url: "api/login",
+      url: "user/login",
       data: {
         username,
         password

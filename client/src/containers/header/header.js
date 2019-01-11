@@ -32,7 +32,6 @@ class header extends Component {
   render() {
     const { user } = this.props;
     console.log("header render");
-    console.log(user)
     return user ? 
     <div className="header_loggedin">
       <div className="left">

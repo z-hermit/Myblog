@@ -8,4 +8,4 @@ mysql:
 session:
   SESSION_HASH_SECRET : "the-big-and-secret-hash-key-here"
   SESSION_BLOCK_SECRET : "lot-secret-of-characters-big-too"
-port: 8001
+port: ":8001"

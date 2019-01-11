@@ -6,9 +6,11 @@ import (
 	"github.com/kataras/iris/middleware/recover"
 	"github.com/spf13/viper"
 	R "mywork.com/Myblog/server/application/routes"
+	"mywork.com/Myblog/server/infrastructure/sqlhelper"
 )
 
 func main() {
+	sqlhelper.Myinit()
 	viper.SetConfigName("config")    // name of config file (without extension)
 	viper.AddConfigPath("./")        // optionally look for config in the working directory
 	viper.AddConfigPath("./config/") // optionally look for config in the working directory
@@ -32,9 +34,7 @@ func main() {
 	app.Get("/", R.Index)
 	app.Get("/explore", R.Explore)
 	app.Get("/logout", R.Logout)
-	app.Get("/deactivate", R.Deactivate)
 	app.Get("/edit_profile", R.EditProfile)
-	app.Get("/create_post", R.CreatePost)
 
 	app.Get("/profile/:id", R.Profile)
 

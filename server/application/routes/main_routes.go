@@ -46,7 +46,7 @@ func Profile(ctx iris.Context) {
 
 		if sid != 0 {
 			profileView := models.ProfileView{datamodels.ProfileView{ViewBy: sid, ViewTo: uid}}
-			err := sqlhelper.Insert(&profileView)
+			_, err := sqlhelper.Insert(&profileView)
 			if err != nil {
 				fmt.Println(err)
 			}

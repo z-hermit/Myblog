@@ -22,8 +22,8 @@ class Nothing extends Component {
 
   render() {
     return (
-      <div class='home_last_mssg'>
-        <img src={Img} alt="" srcset=""/>
+      <div className='home_last_mssg'>
+        <img src={Img} alt="" srcSet=""/>
         <span>{this.props.tip}</span>
       </div>
     );
