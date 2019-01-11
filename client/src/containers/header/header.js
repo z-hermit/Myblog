@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 //components
 // import InfoTable from "../../components/info_table";
 //actions
-// import {actions as listActions} from '../../redux/';
+import {actions } from '../../redux/user';
 //utils
 import Utils from "../../utils/utils";
 //image
@@ -32,6 +32,7 @@ class header extends Component {
   render() {
     const { user } = this.props;
     console.log("header render");
+    
     return user ? 
     <div className="header_loggedin">
       <div className="left">
@@ -43,7 +44,7 @@ class header extends Component {
       <div className="right">
         <Link to="/edit_profile">Edit Profile</Link>
         <Link to="/profile/{{ .session.id }}">Profile</Link>
-        <Link to="/logout">Logout</Link>
+        <Link to="/logout" onClick={this.props.logout}>Logout</Link>
       </div>
     </div>
     :
@@ -64,7 +65,7 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => ({
-  // requestData: (index, scene, packageName) => dispatch(detailActions.requestData(index, scene, packageName, "inUse"))
+  logout: () => dispatch(actions.logout())
 })
 
 export default connect(

@@ -136,5 +136,5 @@ func UserLogin(ctx iris.Context) {
 		response.Msg = "Hello, " + user.Username + "!!"
 		response.Code = models.SUCCESS
 	}
-	json(ctx, response.Code, response.Msg, nil)
+	json(ctx, response.Code, response.Msg, user)
 }

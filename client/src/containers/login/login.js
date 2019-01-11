@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 //components
 // import InfoTable from "../../components/info_table";
 //actions
-import {actions as listActions} from '../../redux/';
+import {actions } from '../../redux/user';
 //utils
 import Utils from "../../utils/utils";
 
@@ -32,6 +32,9 @@ class login extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
+        this.props.loginRequest(values.username, values.password, function (data) {
+          // body...
+        })
       }
     });
   }
@@ -59,7 +62,7 @@ class login extends Component {
               </div>
               <Form onSubmit={this.handleSubmit} className="login-form"  id="normal-login">
                 <FormItem>
-                  {getFieldDecorator('userName', {
+                  {getFieldDecorator('username', {
                     rules: [{ required: true, message: 'Please input your username!' }],
                   })(
                     <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Username" />
@@ -100,7 +103,7 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => ({
-  // requestData: (index, scene, packageName) => dispatch(detailActions.requestData(index, scene, packageName, "inUse"))
+  loginRequest: (username, password, callback) => dispatch(actions.login(callback)(username, password))
 })
 
 export default connect(

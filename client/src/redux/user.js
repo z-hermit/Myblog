@@ -29,6 +29,8 @@ const pageState = (state = initialState, action) => {
         email:action.email,
         avatarPath: action.avatarPath
       };
+    case types.LOGOUT:
+      return initialState;
     case types.CLEAN:
       return initialState;
     default:
@@ -82,36 +84,29 @@ export const actions = {
     type: types.SET_AVATAR,
     avatarPath
   }),
-  login: (callback) => (username, password) => {
+  login: (callback) => (username, password) => (dispatch) => {
+    let param = new URLSearchParams();
+    param.append("username", username);
+    param.append("password", password);
     Axios({
       method: "POST",
       url: "user/login",
-      data: {
-        username,
-        password
-      }
+      data: param
     })
     .then(response => {
-      // let { mssg, success } = response.data
-      // if (success) {
-      //   history.push("/home")
-      // } else {
-      //   Notify({ value: mssg })
-      //   btn
-      //     .attr('value', defBtnValue)
-      //     .removeClass('a_disabled')
-      //   overlay2.hide()
-      // }
-      callback(response)
+      let data = response.data;
+      console.log(data)
+      if (data.code === 200) {
+        dispatch(actions.set(data.data.username, data.data.password, data.data.bio, data.data.email, data.data.avatarPath));
+        callback(response.data);
+      }
     })
     .catch(error => {
       console.log(error);
     });
   },
   logout: (username, password) => ({
-      type: types.SET_COMPARE_INDEX,
-      username,
-      password
+      type: types.LOGOUT
     }), 
   clean: () => ({
       type: types.CLEAN
