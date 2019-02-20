@@ -34,11 +34,13 @@ func CreateTable(tableName string, tableP interface{}) error {
 func Insert(eleP interface{}) (interface{}, error) {
 	if GormBD().NewRecord(eleP) {
 		result := GormBD().Create(eleP)
+		fmt.Println("new !")
 		return result.Value, result.Error
 	}
 	//TODO log
-	result := GormBD().Set("gorm:insert_option", "ON CONFLICT REPLACE").Create(eleP)
-	return result.Value, result.Error
+	//result := GormBD().Set("gorm:insert_option", "ON CONFLICT REPLACE").Create(eleP)
+	//return result.Value, result.Error
+	return nil, errors.New("Insert operation fail, primary key already exist")
 }
 
 func Save(eleP interface{}) {

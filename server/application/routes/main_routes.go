@@ -31,7 +31,7 @@ func Profile(ctx iris.Context) {
 		fmt.Println(err)
 	}
 	sid, _ := session.UserSessions(ctx)
-
+	fmt.Println("sid:" + strconv.Itoa(sid))
 	me := session.MeOrNot(ctx, uid) // Check if its me or not
 	var noMssg string               // Mssg to be displayed when user has no posts
 
@@ -52,9 +52,6 @@ func Profile(ctx iris.Context) {
 			}
 		}
 	}
-
-	//followings := []models.Follow{}
-	//sqlhelper.Select(&followings, "followBy=?", uid)
 
 	json(ctx, models.SUCCESS, "profile", iris.Map{
 		"title":   "@" + user.Username,

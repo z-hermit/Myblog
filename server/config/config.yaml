@@ -1,3 +1,5 @@
+#attention: uppercase key will automatically convert to lowercase, and I don't know why
+
 mysql:
   dbname  : "blog"
   host    : "127.0.0.1"
@@ -6,6 +8,6 @@ mysql:
   pass    : "123"
   sslmode : "false"
 session:
-  SESSION_HASH_SECRET : "the-big-and-secret-hash-key-here"
-  SESSION_BLOCK_SECRET : "lot-secret-of-characters-big-too"
+  session_hash_secret : "the-big-and-secret-hash-key-here"
+  session_block_secret : "lot-secret-of-characters-big-too"
 port: ":8001"

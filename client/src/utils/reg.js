@@ -4,7 +4,6 @@ let Reg = (() => {
 		return re.test(username)
 	}
 
-
 	return {
 	    userName: userName,
 	}

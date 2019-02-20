@@ -7,6 +7,9 @@ module.exports = function(app) {
     	proxy('/user', { target: 'http://localhost:8001/', changeOrigin: true })
     );
     app.use(
+    	proxy('/get', { target: 'http://localhost:8001/', changeOrigin: true })
+    );
+    app.use(
     	proxy('/users', { target: 'http://localhost:8001/', changeOrigin: true })
     );
 }

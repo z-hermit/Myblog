@@ -2,15 +2,18 @@ package main
 
 import (
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/recover"
 	"github.com/spf13/viper"
 	R "mywork.com/Myblog/server/application/routes"
+	"mywork.com/Myblog/server/application/session"
 	"mywork.com/Myblog/server/infrastructure/sqlhelper"
 )
 
 func main() {
 	sqlhelper.Myinit()
+	session.Myinit()
 	viper.SetConfigName("config")    // name of config file (without extension)
 	viper.AddConfigPath("./")        // optionally look for config in the working directory
 	viper.AddConfigPath("./config/") // optionally look for config in the working directory
@@ -31,22 +34,25 @@ func main() {
 		user.Post("/login", R.UserLogin)
 	}
 
-	app.Get("/", R.Index)
-	app.Get("/explore", R.Explore)
-	app.Get("/logout", R.Logout)
-	app.Get("/edit_profile", R.EditProfile)
+	get := app.Party("/get")
+	{
+		get.Get("/", R.Index)
+		get.Get("/explore", R.Explore)
+		get.Get("/logout", R.Logout)
+		get.Get("/edit_profile", R.EditProfile)
 
-	app.Get("/profile/:id", R.Profile)
+		get.Get("/profile/:id", R.Profile)
 
-	app.Get("/view_post/:id", R.ViewPost)
+		get.Get("/view_post/:id", R.ViewPost)
 
-	app.Get("/edit_post/:id", R.EditPost)
+		get.Get("/edit_post/:id", R.EditPost)
 
-	app.Get("/followers/:id", R.Followers)
+		get.Get("/followers/:id", R.Followers)
 
-	app.Get("/followings/:id", R.Followings)
+		get.Get("/followings/:id", R.Followings)
 
-	app.Get("/likes/:id", R.Likes)
+		get.Get("/likes/:id", R.Likes)
+	}
 
 	api := app.Party("/api")
 	{

@@ -97,8 +97,8 @@ func UserSignup(ctx iris.Context) {
 		}
 		session.LogErr(linkErr)
 
-		session.SetSession(ctx, "id", lastUser.ID)
-		session.SetSession(ctx, "username", username)
+		session.SetSession(ctx, session.USERID, lastUser.ID)
+		session.SetSession(ctx, session.USERNAME, username)
 
 		response.Msg = "Hello, " + username + "!!"
 		response.Code = models.SUCCESS
@@ -125,13 +125,13 @@ func UserLogin(ctx iris.Context) {
 	fmt.Println(err)
 	if rusername == "" || rpassword == "" {
 		response.Msg = "Some values are missing!!"
-	} else if err != nil {
+	} else if user.Username == "" {
 		response.Msg = "Invalid username!!"
 	} else if err != nil {
 		response.Msg = "Invalid password!!"
 	} else {
-		session.SetSession(ctx, "id", user.ID)
-		session.SetSession(ctx, "username", user.Username)
+		session.SetSession(ctx, session.USERID, user.ID)
+		session.SetSession(ctx, session.USERNAME, user.Username)
 
 		response.Msg = "Hello, " + user.Username + "!!"
 		response.Code = models.SUCCESS

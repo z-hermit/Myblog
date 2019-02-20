@@ -10,17 +10,25 @@ import { Link } from 'react-router-dom';
 // import {actions as listActions} from '../../redux/';
 //utils
 import Utils from "../../utils/utils";
-
+import { Button, Input } from 'antd';
 //const 
 
 class createPost extends Component {
 
   constructor(props) {
-    super(props);
     console.log("createPost constructor");
+    super(props);
+    this.state = {
+      titleValue : "",
+      contentValue : ""
+    }
   }
 
   componentDidUpdate() {
+  }
+
+  commit (e) {
+    console.log(e)
   }
 
   render() {
@@ -28,22 +36,34 @@ class createPost extends Component {
     console.log("createPost render");
 
     return (
-      <div class="notes_wrapper">
-        <div class='edit'>
-          <div class="edit_info">
-            <img class="edit_img" src='/users/avatar.png' alt="Your avatar" />
+      <div className="notes_wrapper">
+        <div className='edit'>
+          <div className="edit_info">
+            <img className="edit_img" src='/users/avatar.png' alt="Your avatar" />
             <span>Create Post</span>
           </div>
-          <div class="eu_div">
-            <span class='edit_span'>Title</span>
-            <input type="text" class='e_username create_username' placeholder='Title..' autoComplete='false' autoFocus spellCheck='false' />
+          <div className="eu_div">
+            <span className='edit_span'>Title</span>
+            <Input type="text" className='e_username create_username' placeholder='Title..' autoComplete='false' autoFocus spellCheck='false'
+              value={this.state.value}
+              onChange={e => {
+                this.setState({
+                  titleValue:e.target.value
+                })
+              }} />
           </div>
-          <div class="eb_div">
-            <span class='edit_span'>Content</span>
-            <textarea class="e_bio create_content" placeholder='Content..' spellCheck='false'></textarea>
+          <div className="eb_div">
+            <span className='edit_span'>Content</span>
+            <textarea placeholder='Content..' spellCheck='false' rows={4}
+              value={this.state.value}
+                onChange={e => {
+                  this.setState({
+                    titleValue:e.target.value
+                  })
+                }} />
           </div>
-          <div class="eb_btns">
-            <a href="#" class="pri_btn e_done create_blog">Create Post</a>
+          <div className="eb_btns">
+            <Button type="primary" className="pri_btn e_done create_blog" onClick={this.commit}>Create Post</Button>
           </div>
         </div>
       </div>

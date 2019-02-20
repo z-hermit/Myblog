@@ -78,8 +78,7 @@ func UpdateProfile(ctx iris.Context) {
 		_, iErr := db.Exec("UPDATE users SET username=?, email=?, bio=? WHERE id=?", username, email, bio, id)
 		session.LogErr(iErr)
 
-		session := session.GetSession(ctx)
-		session.Set("username", username)
+		session.SetSession(ctx, session.USERNAME, username)
 
 		resp["mssg"] = "Profile updated!!"
 		resp["success"] = true

@@ -32,7 +32,8 @@ class header extends Component {
   render() {
     const { user } = this.props;
     console.log("header render");
-    
+    console.log(user);
+
     return user ? 
     <div className="header_loggedin">
       <div className="left">
@@ -43,7 +44,7 @@ class header extends Component {
       </div>
       <div className="right">
         <Link to="/edit_profile">Edit Profile</Link>
-        <Link to="/profile/{{ .session.id }}">Profile</Link>
+        <Link to={"/profile/" + user.id}>Profile</Link>
         <Link to="/logout" onClick={this.props.logout}>Logout</Link>
       </div>
     </div>

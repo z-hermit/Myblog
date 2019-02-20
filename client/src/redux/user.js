@@ -22,7 +22,9 @@ const initialState = null;
 const pageState = (state = initialState, action) => {
   switch (action.type) {
     case types.SET:
+      console.log(action)
       return {
+        id: action.id,
         username: action.username,
         password: action.password,
         bio: action.bio,
@@ -42,10 +44,10 @@ export default pageState;
 
 // Action Creators
 export const actions = {
-  set: (username, password, bio, email, avatarPath) => ({
+  set: (id, username, bio, email, avatarPath) => ({
       type: types.SET,
+      id,
       username,
-      password,
       bio,
       email,
       avatarPath
@@ -55,19 +57,18 @@ export const actions = {
     param.append("username", username);
     param.append("email", email);
     param.append("password", password);
-    console.log(callback)
     Axios({
       method: "POST",
       url: "user/signup",
       data: param
     })
     .then(response => {
-      let data = response.data;
-      console.log(data)
-      if (data.code === 200) {
-        dispatch(actions.set(data.username, data.password, "", data.email, ""));
-        callback(response.data);
+      let respdata = response.data;
+      console.log(respdata)
+      if (respdata.code === 200) {
+        dispatch(actions.set(respdata.data.id, respdata.data.username, "", respdata.data.email, ""));
       }
+      callback(respdata);
     })
     .catch(error => {
       console.log(error);
@@ -94,12 +95,12 @@ export const actions = {
       data: param
     })
     .then(response => {
-      let data = response.data;
-      console.log(data)
-      if (data.code === 200) {
-        dispatch(actions.set(data.data.username, data.data.password, data.data.bio, data.data.email, data.data.avatarPath));
-        callback(response.data);
+      let respdata = response.data;
+      console.log(respdata)
+      if (respdata.code === 200) {
+        dispatch(actions.set(respdata.data.id, respdata.data.username, respdata.data.bio, respdata.data.email, respdata.data.avatarPath));
       }
+      callback(respdata);
     })
     .catch(error => {
       console.log(error);

@@ -14,7 +14,7 @@ import Utils from "../../utils/utils";
 import "./login.css"
 
 import {
-  Form, Icon, Input, Button, Checkbox,
+  Form, Icon, Input, Button, Checkbox, message
 } from 'antd';
 
 const FormItem = Form.Item;
@@ -33,7 +33,9 @@ class login extends Component {
       if (!err) {
         console.log('Received values of form: ', values);
         this.props.loginRequest(values.username, values.password, function (data) {
-          // body...
+          if (data.code !== 200) {
+            message.error('login error');
+          }
         })
       }
     });
