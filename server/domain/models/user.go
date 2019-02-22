@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"log"
 	"mywork.com/Myblog/server/infrastructure/datamodels"
 	"mywork.com/Myblog/server/infrastructure/sqlhelper"
@@ -9,10 +8,10 @@ import (
 
 type User struct {
 	datamodels.User
-	followers  []int
-	followings []int
-	posts      []Post
-	likes      []int
+	Followers  []int  `json:"followers"`
+	Followings []int  `json:"followings"`
+	Posts      []Post `json:"posts"`
+	Likes      []int  `json:"likes"`
 }
 
 func GetUser(id int) User {
@@ -27,26 +26,26 @@ func (u *User) Update() {
 	follows := []Follow{}
 	sqlhelper.Select(&follows, "follow_to=?", u.ID)
 	for _, v := range follows {
-		u.followers = append(u.followers, v.FollowBy)
+		u.Followers = append(u.Followers, v.FollowBy)
 	}
 
 	followings := []Follow{}
 	sqlhelper.Select(&followings, "follow_by=?", u.ID)
 	for _, v := range followings {
-		u.followings = append(u.followings, v.FollowTo)
+		u.Followings = append(u.Followings, v.FollowTo)
 	}
 
 	posts := []Post{}
 	sqlhelper.Select(&posts, "created_by=?", u.ID)
 	for _, v := range posts {
 		v.CreatedBy = u.ID
-		u.posts = append(u.posts, v)
+		u.Posts = append(u.Posts, v)
 	}
 
 	likes := []Like{}
 	sqlhelper.Select(&likes, "like_by=?", u.ID)
 	for _, v := range likes {
-		u.likes = append(u.likes, v.LikeID)
+		u.Likes = append(u.Likes, v.LikeID)
 	}
 }
 
@@ -59,7 +58,6 @@ func (u User) CountOfFollow() int {
 func IsFollowing(by int, to int) bool {
 	follow := Follow{}
 	sqlhelper.SelectOne(&follow, "follow_by=? AND follow_to=?", by, to)
-	fmt.Println("follow.ID  ", follow.ID)
 	if follow.ID == 0 {
 		return false
 	}

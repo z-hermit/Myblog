@@ -31,7 +31,6 @@ func Profile(ctx iris.Context) {
 		fmt.Println(err)
 	}
 	sid, _ := session.UserSessions(ctx)
-	fmt.Println("sid:" + strconv.Itoa(sid))
 	me := session.MeOrNot(ctx, uid) // Check if its me or not
 	var noMssg string               // Mssg to be displayed when user has no posts
 

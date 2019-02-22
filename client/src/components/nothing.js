@@ -1,7 +1,19 @@
 import React, { Component } from 'react';
 
-export default () => 
-<div class='home_last_mssg'>
-  <img src="/images/large.jpg" alt="" srcset="" />
-  <span>nothing</span>
-</div>
+import Img from "../images/large.jpg";
+
+class Nothing extends Component {
+
+  render() {
+    return (
+      <div className='home_last_mssg'>
+        <img src={Img} alt="" srcSet=""/>
+        <span>{this.props.tip}</span>
+      </div>
+    );
+  }
+}
+
+
+export default Nothing;
+

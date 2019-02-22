@@ -99,15 +99,23 @@ func SelectOne(eleP interface{}, queryKey string, queryValue ...interface{}) err
 	return nil
 }
 
-func DB() *sql.DB {
-	mysqlconfig := viper.GetStringMap("mysql")
-	user := mysqlconfig["user"].(string)
-	password := mysqlconfig["pass"].(string)
-	host := mysqlconfig["host"].(string)
-	_db := mysqlconfig["dbname"].(string)
+var sqldb *sql.DB = nil
 
-	db, _ := sql.Open("mysql", user+":"+password+"@tcp("+host+":3306)/"+_db)
-	return db
+func DB() *sql.DB {
+	if sqldb == nil {
+		mysqlconfig := viper.GetStringMap("mysql")
+		user := mysqlconfig["user"].(string)
+		password := mysqlconfig["pass"].(string)
+		host := mysqlconfig["host"].(string)
+		_db := mysqlconfig["dbname"].(string)
+
+		sqldb, err := sql.Open("mysql", user+":"+password+"@tcp("+host+":3306)/"+_db)
+		if err != nil {
+			fmt.Println(err)
+		}
+		return sqldb
+	}
+	return sqldb
 }
 
 func GormBD() *gorm.DB {

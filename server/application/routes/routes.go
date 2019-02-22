@@ -37,7 +37,6 @@ func loggedIn(ctx iris.Context, urlRedirect string) {
 		URL = urlRedirect
 	}
 	id, _ := session.UserSessions(ctx)
-	fmt.Println(id)
 	if id == 0 {
 		ctx.Redirect(URL)
 	}

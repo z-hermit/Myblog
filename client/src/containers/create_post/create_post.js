@@ -10,7 +10,9 @@ import { Link } from 'react-router-dom';
 // import {actions as listActions} from '../../redux/';
 //utils
 import Utils from "../../utils/utils";
-import { Button, Input } from 'antd';
+import Router from "../../utils/router";
+import { Button, Input, message } from 'antd';
+import Axios from "axios";
 //const 
 
 class createPost extends Component {
@@ -22,13 +24,34 @@ class createPost extends Component {
       titleValue : "",
       contentValue : ""
     }
+    this.commit = (e) => {
+      let param = new URLSearchParams();
+      let title = this.state.titleValue;
+      let content = this.state.contentValue;
+      param.append("title", title);
+      param.append("content", content);
+      Axios({
+        method: "POST",
+        url: "/api/create_new_post/",
+        data: param
+      })
+      .then(response => {
+        let respData = response.data;
+        console.log(respData)
+        if (respData.code === 200) {
+          console.log(respData)
+          message.success('commit success');
+          console.log(this.props);
+          Router.goTo(this,`/view_post/${respData.data.postID}`);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    }
   }
 
   componentDidUpdate() {
-  }
-
-  commit (e) {
-    console.log(e)
   }
 
   render() {
@@ -45,7 +68,7 @@ class createPost extends Component {
           <div className="eu_div">
             <span className='edit_span'>Title</span>
             <Input type="text" className='e_username create_username' placeholder='Title..' autoComplete='false' autoFocus spellCheck='false'
-              value={this.state.value}
+              value={this.state.titleValue}
               onChange={e => {
                 this.setState({
                   titleValue:e.target.value
@@ -55,10 +78,10 @@ class createPost extends Component {
           <div className="eb_div">
             <span className='edit_span'>Content</span>
             <textarea placeholder='Content..' spellCheck='false' rows={4}
-              value={this.state.value}
+              value={this.state.contentValue}
                 onChange={e => {
                   this.setState({
-                    titleValue:e.target.value
+                    contentValue:e.target.value
                   })
                 }} />
           </div>

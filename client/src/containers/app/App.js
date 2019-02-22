@@ -12,6 +12,7 @@ import Home from "../home/home"
 import CreatePost from "../create_post/create_post"
 import EditProfile from "../edit_profile/edit_profile"
 import Profile from "../profile/profile"
+import ViewPost from "../view_post/view_post"
 
 import {
   BrowserRouter as Router,
@@ -31,6 +32,7 @@ class App extends Component {
               <Route exact path="/create_post" component={CreatePost}/>
               <Route exact path="/edit_profile/" component={EditProfile}/>
               <Route exact path="/profile/:id" component={Profile}/>
+              <Route exact path="/view_post/:id" component={ViewPost}/>
               <Redirect to="/" />
             </Switch>
     } else {

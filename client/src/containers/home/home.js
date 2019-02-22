@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom';
 //components
 // import InfoTable from "../../components/info_table";
-import Nothing from "./nothing"
+import Nothing from "../../components/nothing"
 import End from "./end"
 import Post from "./post"
 //actions

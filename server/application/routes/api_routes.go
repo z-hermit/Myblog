@@ -19,7 +19,8 @@ func CreateNewPost(ctx iris.Context) {
 	id, _ := session.UserSessions(ctx)
 	db := sqlhelper.DB()
 
-	stmt, _ := db.Prepare("INSERT INTO posts(title, content, createdBy, createdAt) VALUES (?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO posts(title, content, created_by, created_at) VALUES (?, ?, ?, ?)")
+	session.LogErr(err)
 	rs, iErr := stmt.Exec(title, content, id, time.Now())
 	session.LogErr(iErr)
 	insertID, _ := rs.LastInsertId()

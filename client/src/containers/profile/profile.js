@@ -39,10 +39,11 @@ class Profile extends Component {
       data: null
     })
     .then(response => {
-      let data = response.data;
-      console.log(data)
-      if (data.code === 200) {
-        this.state = response.data;
+      let respData = response.data;
+      console.log(respData)
+      if (respData.code === 200) {
+        this.setState(respData.data);
+        console.log(this.state)
       }
     })
     .catch(error => {
@@ -57,7 +58,7 @@ class Profile extends Component {
 
     if (!this.state)
       return <div />;
-    const user = this.state.user;
+    let user = this.state.user;
     let link = null;
     if (sesId === id) {
       link = <div class="user_buttons">
@@ -80,46 +81,46 @@ class Profile extends Component {
     }
 
     return (
-      <div class="notes_wrapper">
-        <div class="aligner">
+      <div className="notes_wrapper">
+        <div className="aligner">
 
-          <div class='user_banner'>
-            <div class="profile_img_div">
-              <img src={Img} alt="" srcset=""/>
+          <div className='user_banner'>
+            <div className="profile_img_div">
+              <img src={Img} alt="" srcSet=""/>
             </div>
-            <div class="user_buttons">
+            <div className="user_buttons">
               <link/>
             </div>
-            <div class="user_info">
-              <a href="#" class="user_main_link">{user.username}</a>
-              <span class="user_no_notes">{user.email}</span>
-              <div class="user_bio ">
+            <div className="user_info">
+              <a href="#" className="user_main_link">{user.username}</a>
+              <span className="user_no_notes">{user.email}</span>
+              <div className="user_bio ">
                 <span>
                   {bio}
                 </span>
               </div>
               <hr />
-              <div class="user_stats">
-                <div class="stat_post">
-                  <span class="stat_hg">{user.posts.length}</span>
-                  <span class="stat_nhg">Posts</span>
+              <div className="user_stats">
+                <div className="stat_post">
+                  <span className="stat_hg">{user.posts ? user.posts.length : 0}</span>
+                  <span className="stat_nhg">Posts</span>
                 </div>
-                <a href="/followers/{{ $id }}" class="stat_followers">
-                  <span class="stat_hg">{user.followers.length}</span>
-                  <span class="stat_nhg" >Followers</span>
+                <a href="/followers/{{ $id }}" className="stat_followers">
+                  <span className="stat_hg">{user.followers ? user.followers.length : 0}</span>
+                  <span className="stat_nhg" >Followers</span>
                 </a>
-                <a href="/followings/{{ $id }}" class="stat_followings">
-                  <span class="stat_hg">{user.followings.length}</span>
-                  <span class="stat_nhg">Followings</span>
+                <a href="/followings/{{ $id }}" className="stat_followings">
+                  <span className="stat_hg">{user.followings ? user.followings.length : 0}</span>
+                  <span className="stat_nhg">Followings</span>
                 </a>
               </div>
             </div>
           </div>
 
-          <div class="notes">
+          <div className="notes">
 
-            {user.posts.length === 0 ? 
-              <Nothing/>
+            {!user.posts || user.posts.length === 0 ? 
+              <Nothing tip={"No posts for the user, lazy..."}/>
               :
               user.posts.map(item => {
                 return <Post postDate={item} />

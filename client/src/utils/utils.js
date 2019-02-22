@@ -28,7 +28,7 @@ let Utils = (() => {
 		else
 			return num;
 	}
-
+	//对象中字符串首字母小写
 	const getNamedObj = (obj) => {
 		if (typeof obj === "object" && obj) {
 			let newobj = Object.prototype.toString.call(obj) === "[object Array]" ? [] : {};
@@ -44,7 +44,7 @@ let Utils = (() => {
 		}
 		return obj;
 	}
-
+	//保留对象中数字的两位小数
 	const fixObjNumber = (obj) => {
 		console.log(obj)
 		if (typeof obj === "object" && obj) {
@@ -55,7 +55,17 @@ let Utils = (() => {
 		}
 		return fixNumber(obj);
 	}
-
+	//处理对象中的数据
+	const handleObjEle = (obj, fn) => {
+		if (typeof obj === "object" && obj) {
+			for (let key in obj) {
+				obj[key] = handleObjEle(obj[key], fn);
+			}
+			return obj;
+		}
+		return fn(obj);
+	}
+	//获得一个间隔wait时间可以执行的函数
 	function throttle (fn, wait) {
 	    let _fn = fn,       // 保存需要被延迟的函数引用
 	        timer,          
@@ -80,7 +90,7 @@ let Utils = (() => {
 	        }, wait);
 	    }
 	}
-
+	//获得一个柯里化的函数
 	function curry(fn) {
     	const g = (...allArgs) => allArgs.length >= fn.length ?
 	        fn(...allArgs) : 
@@ -88,7 +98,7 @@ let Utils = (() => {
 
 	    return g;
 	}
-
+	//分批定时处理数据
 	function timeChunk(data, fn, count = 1, wait) {
 	    let obj, timer;
 
@@ -114,16 +124,17 @@ let Utils = (() => {
 	const greenStyle = (item) => (<p style={{color:"green", margin:0}}> {item} </p>)
 
 	const compare = (x, y) => {//比较函数,升序
-      if (x < y) {
-          return -1;
-      } else if (x > y) {
-          return 1;
-      } else {
-          return 0;
-      }
-  }
+		if (x < y) {
+		    return -1;
+		} else if (x > y) {
+		    return 1;
+		} else {
+		    return 0;
+		}
+	}
 
 	return {
+		handleObjEle: handleObjEle,
 	    downConvert: downConvert,
 	    fixNumber: fixNumber,
 	    convertBool: convertBool,
