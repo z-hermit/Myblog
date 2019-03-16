@@ -47,11 +47,22 @@ func Save(eleP interface{}) {
 	GormBD().Save(eleP)
 }
 
-func Update(eleP interface{}, updateField map[string]interface{}, queryKey string, queryValue ...interface{}) error {
+//db.Model(&user).Update("name", "hello")
+func Updates(eleP interface{}, updateField map[string]interface{}, queryKey string, queryValue ...interface{}) error {
 	if queryKey == "" {
-		return GormBD().Model(eleP).Update(updateField).Error
+		return GormBD().Model(eleP).Updates(updateField).Error
 	} else {
-		return GormBD().Model(eleP).Where(queryKey, queryValue...).Update(updateField).Error //eleP must as &User{}, no primary key
+		return GormBD().Model(eleP).Where(queryKey, queryValue...).Updates(updateField).Error //eleP must as &User{}, no primary key
+	}
+	return nil
+}
+
+//db.Model(&user).Update("name", "hello")
+func Update(eleP interface{}, updateKey string, updateValue string, queryKey string, queryValue ...interface{}) error {
+	if queryKey == "" {
+		return GormBD().Model(eleP).Update(updateKey, updateValue).Error
+	} else {
+		return GormBD().Model(eleP).Where(queryKey, queryValue...).Update(updateKey, updateValue).Error //eleP must as &User{}, no primary key
 	}
 	return nil
 }
