@@ -30,20 +30,19 @@ class Post extends Component {
   render() {
     const { postData } = this.props;
     console.log("Post render");
-
     return (
-      <a href={"/view_post/" + postData.id} class="note">
-        <div class="note_header common_header">
-          <img src={"/users/" + postData.createdBy + "/avatar.png"} alt="" srcset=""/>
-          <div class="note_h_left">
-            <span class="note_username">{postData.username}</span>
-            <span class='note_time'>{postData.time}</span>
+      <a href={"/view_post/" + postData.id} className="note">
+        <div className="note_header common_header">
+          <img src={"/users/" + postData.createdBy + "/avatar.png"} alt="" srcSet=""/>
+          <div className="note_h_left">
+            <span className="note_username">{postData.username}</span>
+            <span className='note_time'>{postData.time}</span>
           </div>
         </div>
-        <div class="note_title">
+        <div className="note_title">
           <span>{postData.title}</span>
         </div>
-        <div class="note_content">
+        <div className="note_content">
           <span>{postData.content}</span>
         </div>
       </a>

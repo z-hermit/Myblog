@@ -34,8 +34,9 @@ class ViewPost extends Component {
 
   render() {
     const { sesid } = this.props;
-    const post = Router.getQuery(this);
+    const post = Router.getParam(this);
     console.log("ViewPost render");
+    console.log(this.props)
 
     let like;
     if (post.like) {

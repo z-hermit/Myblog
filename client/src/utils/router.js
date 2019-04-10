@@ -23,7 +23,7 @@ let Router = (() => {
 	}
 
 	const getParam = (content) => {
-		return content.props.params;
+		return content.props.match.params;
 	}
 
 	const getQuery = (content) => {

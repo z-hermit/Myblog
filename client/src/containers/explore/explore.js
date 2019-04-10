@@ -13,6 +13,8 @@ import End from "../../components/end";
 //utils
 import Utils from "../../utils/utils";
 
+import Axios from "axios";
+
 //const 
 
 class explore extends Component {
@@ -20,39 +22,56 @@ class explore extends Component {
   constructor(props) {
     super(props);
     console.log("explore constructor");
+    this.state = {
+      users:[]
+    }
   }
 
-  componentDidUpdate() {
+  componentDidMount() {
+    let url = "/explore";
+    Axios({
+        method: "GET",
+        url: url,
+        data: {}
+      })
+      .then(response => {
+        this.setState({
+          users:response.data.data.users
+        })
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   render() {
-    const { users } = this.props;
+    const { users } = this.state;
     console.log("explore render");
-
+    console.log(users)
     return (
-      <div class="notes_wrapper">
-        <div class="explore">
+      <div className="notes_wrapper">
+        <div className="explore">
 
-          <div class="explores">
+          <div className="explores">
             {
-              users.map(user => {
-                <div class="explores_list">
-                  <div class="exl_main">
-                    <img src="/users/{user.avatar}/avatar.png" alt="" srcset=""/>
-                    <div class="exl_content">
-                      <span class="exl_username">{user.name}</span>
-                      <div class="exl_desc">
-                        <span class="exl_email">{user.email}</span>
-                        <span class="exl_desc_sep">•</span>
-                        <span class="exl_followers">{user.followerCount} Followers</span>
+              users.map(user => (
+                <div className="explores_list">
+                  <div className="exl_main">
+                    <img src="/users/{user.avatar}/avatar.png" alt="" srcSet=""/>
+                    <div className="exl_content">
+                      <span className="exl_username">{user.name}</span>
+                      <div className="exl_desc">
+                        <span className="exl_email">{user.email}</span>
+                        <span className="exl_desc_sep">•</span>
+                        <span className="exl_followers">{user.followerCount} Followers</span>
                       </div>
                     </div>
                   </div>
-                  <div class="exl_ff">
-                    <a href="/profile/{user.id}" class="pri_btn">Profile</a>
+                  <div className="exl_ff">
+                    <a href="/profile/{user.id}" className="pri_btn">Profile</a>
                   </div>
                 </div>
-              })
+              ))
             }
 
             {

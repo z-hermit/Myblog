@@ -122,8 +122,8 @@ class Profile extends Component {
             {!user.posts || user.posts.length === 0 ? 
               <Nothing tip={"No posts for the user, lazy..."}/>
               :
-              user.posts.map(item => {
-                return <Post postDate={item} />
+              user.posts.map((item, index) => {
+                return <Post postData={item} key={index}/>
               })
             }
 

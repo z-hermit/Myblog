@@ -38,7 +38,7 @@ class header extends Component {
     <div className="header_loggedin">
       <div className="left">
         <Link to="/">Home</Link>
-        <Link to="/explore">Explore</Link>
+        <Link to="/explore_users">Explore</Link>
         <Link to="/create_post">New Post</Link>
         <Link to="/deactivate">Deactivate</Link>
       </div>

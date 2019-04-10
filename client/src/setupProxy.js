@@ -12,4 +12,7 @@ module.exports = function(app) {
     app.use(
     	proxy('/users', { target: 'http://localhost:8001/', changeOrigin: true })
     );
+    app.use(
+        proxy('/explore', { target: 'http://localhost:8001/', changeOrigin: true })
+    );
 }

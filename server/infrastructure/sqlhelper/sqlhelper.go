@@ -6,8 +6,9 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/kataras/iris/core/errors"
 	"github.com/spf13/viper"
-	"mywork.com/Myblog/server/config"
-	"mywork.com/Myblog/server/infrastructure/datamodels"
+	"mywork.com/mother_packer/config"
+	"mywork.com/mother_packer/infrastructure/datamodels"
+	"mywork.com/mother_packer/infrastructure/loghelper"
 )
 
 var dbarg string
@@ -15,11 +16,7 @@ var dbarg string
 func Myinit() {
 	dbarg = config.SqlConfig()
 
-	MigrateTable(datamodels.User{})
-	MigrateTable(datamodels.Follow{})
-	MigrateTable(datamodels.Like{})
-	MigrateTable(datamodels.Post{})
-	MigrateTable(datamodels.ProfileView{})
+	MigrateTable(datamodels.PackageRecord{})
 }
 
 func MigrateTable(tableP interface{}) error {
@@ -34,7 +31,6 @@ func CreateTable(tableName string, tableP interface{}) error {
 func Insert(eleP interface{}) (interface{}, error) {
 	if GormBD().NewRecord(eleP) {
 		result := GormBD().Create(eleP)
-		fmt.Println("new !")
 		return result.Value, result.Error
 	}
 	//TODO log
@@ -58,7 +54,7 @@ func Updates(eleP interface{}, updateField map[string]interface{}, queryKey stri
 }
 
 //db.Model(&user).Update("name", "hello")
-func Update(eleP interface{}, updateKey string, updateValue string, queryKey string, queryValue ...interface{}) error {
+func Update(eleP interface{}, updateKey string, updateValue interface{}, queryKey string, queryValue ...interface{}) error {
 	if queryKey == "" {
 		return GormBD().Model(eleP).Update(updateKey, updateValue).Error
 	} else {
@@ -67,11 +63,11 @@ func Update(eleP interface{}, updateKey string, updateValue string, queryKey str
 	return nil
 }
 
-func Delete(eleP interface{}, queryKey string, queryValue string) error {
-	rows, _ := GormBD().Model(eleP).Rows()
-	if rows.Next() {
-		return errors.New("sqlhelper: delete too many rows")
-	}
+func Delete(eleP interface{}) error {
+	//rows, _ := GormBD().Model(eleP).Rows()
+	//if rows.Next() {
+	//	return errors.New("sqlhelper: delete too many rows")
+	//}
 
 	return GormBD().Delete(eleP).Error
 }
@@ -132,8 +128,9 @@ func DB() *sql.DB {
 func GormBD() *gorm.DB {
 
 	db, err := gorm.Open("mysql", dbarg)
+	//db.LogMode(true)
 	if err != nil {
-		fmt.Println(err)
+		loghelper.GlobalLog.Println("GormBD:", err)
 	}
 	return db
 }
