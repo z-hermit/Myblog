@@ -14,13 +14,13 @@ type User struct {
 	Likes      []int  `json:"likes"`
 }
 
-func GetUser(id int) User {
+func GetUser(id int) *User {
 	user := User{}
 	user.ID = id
-	return user
+	return &user
 }
 
-func (u *User) Update() {
+func (u *User) Update() *User {
 	sqlhelper.Select(u, "id=?", u.ID)
 
 	follows := []Follow{}
@@ -45,8 +45,9 @@ func (u *User) Update() {
 	likes := []Like{}
 	sqlhelper.Select(&likes, "like_by=?", u.ID)
 	for _, v := range likes {
-		u.Likes = append(u.Likes, v.LikeID)
+		u.Likes = append(u.Likes, v.ID)
 	}
+	return u
 }
 
 func (u User) CountOfFollow() int {
@@ -90,7 +91,7 @@ func (u User) GetRelativePost() []Post {
 
 func (u User) LikeOrNot(postId interface{}) bool {
 	like := Like{}
-	sqlhelper.SelectOne(like, "likeBy=? AND postID=?", u.ID, postId)
+	sqlhelper.SelectOne(&like, "like_by=? AND post_id=?", u.ID, postId)
 	if like.ID == 0 {
 		return false
 	}

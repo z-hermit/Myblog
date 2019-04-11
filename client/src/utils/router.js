@@ -10,15 +10,16 @@ let Router = (() => {
 			path = des;
 		} else if (data[0] === "query") {
 			path = {
-			  pathname:'des',
+			  pathname:des,
 			  query:data[1],
 			}
 		} else if (data[0] === "state") {
 			path = {
-			  pathname:'des',
+			  pathname:des,
 			  state:data[1],
 			}
 		}
+		console.log(path)
 		content.props.history.push(path);
 	}
 

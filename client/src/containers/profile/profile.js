@@ -33,34 +33,44 @@ class Profile extends Component {
   // }
   componentDidMount() {
     const id = this.props.match.params.id;
-    Axios({
-      method: "GET",
-      url: "/get/profile/" + id,
-      data: null
-    })
-    .then(response => {
-      let respData = response.data;
-      console.log(respData)
-      if (respData.code === 200) {
-        this.setState(respData.data);
-        console.log(this.state)
-      }
-    })
-    .catch(error => {
-      console.log(error);
-    });
+    const { ownerId } = this.props.owner.id;
+    if (ownerId !== id) {
+      Axios({
+        method: "GET",
+        url: "/get/profile/" + id,
+        data: null
+      })
+      .then(response => {
+        let respData = response.data;
+        console.log(respData)
+        if (respData.code === 200) {
+          this.setState({
+            user:respData.data.user
+          });
+          console.log(this.state)
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    }
   }
 
   render() {
-    const { sesId } = this.props;
+    const { owner } = this.props.owner;
+    const ownerId = owner.id;
     let id = this.props.match.params.id;
     console.log("Profile render");
-
+    if (owner === id) {
+      this.setState({
+        user:owner
+      })
     if (!this.state)
       return <div />;
+    }
     let user = this.state.user;
     let link = null;
-    if (sesId === id) {
+    if (ownerId === id) {
       link = <div class="user_buttons">
               <Link to="/create_post" class="pri_btn">New Post</Link>
             </div>
@@ -73,7 +83,7 @@ class Profile extends Component {
 
     let bio = user.bio;
     if (!bio) {
-      if (sesId === id) {
+      if (ownerId === id) {
         bio = "You have no bio!!";
       } else {
         bio = `${user.username} has no bio!!`;
@@ -138,7 +148,7 @@ class Profile extends Component {
 
 const mapStateToProps = state => {
   return {
-    sesId:state.user.id,
+    owner:state.user
   }
 }
 

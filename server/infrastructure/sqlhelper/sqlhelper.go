@@ -100,10 +100,8 @@ func Count(table string, queryKey string, queryValue ...interface{}) int {
 func SelectOne(eleP interface{}, queryKey string, queryValue ...interface{}) error {
 	if queryKey == "" {
 		return GormBD().First(eleP).Error
-	} else {
-		return GormBD().Where(queryKey, queryValue...).First(eleP).Error
 	}
-	return nil
+	return GormBD().Where(queryKey, queryValue...).First(eleP).Error
 }
 
 var sqldb *sql.DB = nil

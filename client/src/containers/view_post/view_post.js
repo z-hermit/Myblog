@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import Utils from "../../utils/utils";
 import Router from "../../utils/router";
 import { Button, Input } from 'antd';
+import Axios from "axios";
 //const 
 
 class ViewPost extends Component {
@@ -20,24 +21,40 @@ class ViewPost extends Component {
     console.log("ViewPost constructor");
     super(props);
     this.state = {
-      titleValue : "",
-      contentValue : ""
+      post: null
     }
   }
 
-  componentDidUpdate() {
-  }
-
-  commit (e) {
-    console.log(e)
+  componentDidMount() {
+    const postId = Router.getParam(this).id;
+    Axios({
+        method: "GET",
+        url: "/get/view_post/" + postId,
+        data: null
+      })
+      .then(response => {
+        let respData = response.data;
+        console.log(respData)
+        if (respData.code === 200) {
+          this.setState({
+            post:respData.data
+          });
+          console.log(this.state)
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   render() {
     const { sesid } = this.props;
-    const post = Router.getParam(this);
+    const postId = Router.getParam(this).id;
     console.log("ViewPost render");
-    console.log(this.props)
-
+    const post = this.state.post;
+    if (post === null) {
+      return <div />
+    }
     let like;
     if (post.like) {
       like = <span className="unlike_post lu_post" data-post="{post.id}" ><i className="material-icons">favorite</i></span>;

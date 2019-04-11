@@ -49,9 +49,3 @@ func notLoggedIn(ctx iris.Context) {
 		ctx.Redirect("/")
 	}
 }
-
-func invalid(ctx iris.Context, what int) {
-	if what == 0 {
-		ctx.Redirect("/404")
-	}
-}

@@ -122,7 +122,9 @@ func UserLogin(ctx iris.Context) {
 	sqlhelper.SelectOne(&user, "username=?", rusername)
 
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(rpassword))
-	fmt.Println(err)
+	if err != nil {
+		json(ctx, response.Code, err.Error(), nil)
+	}
 	if rusername == "" || rpassword == "" {
 		response.Msg = "Some values are missing!!"
 	} else if user.Username == "" {
@@ -135,6 +137,8 @@ func UserLogin(ctx iris.Context) {
 
 		response.Msg = "Hello, " + user.Username + "!!"
 		response.Code = models.SUCCESS
+		json(ctx, response.Code, response.Msg, models.GetUser(user.ID).Update())
+		return
 	}
-	json(ctx, response.Code, response.Msg, user)
+	json(ctx, response.Code, response.Msg, nil)
 }

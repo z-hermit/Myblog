@@ -96,6 +96,11 @@ func Explore(ctx iris.Context) {
 	})
 }
 
+func HomePost(ctx iris.Context) {
+	loggedIn(ctx, "")
+
+}
+
 // ViewPost route
 func ViewPost(ctx iris.Context) {
 	loggedIn(ctx, "")
@@ -114,7 +119,11 @@ func ViewPost(ctx iris.Context) {
 
 	// post details
 	db.QueryRow("SELECT COUNT(postID) AS postCount, postID, title, content, createdBy, createdAt FROM posts WHERE postID=?", param).Scan(&postCount, &postID, &title, &content, &createdBy, &createdAt)
-	invalid(ctx, postCount)
+
+	if postCount == 0 {
+		ctx.Redirect("/404")
+		return
+	}
 
 	// likes
 	db.QueryRow("SELECT COUNT(likeID) AS likesCount FROM likes WHERE postID=?", param).Scan(&likesCount)
@@ -122,15 +131,11 @@ func ViewPost(ctx iris.Context) {
 	id, _ := session.UserSessions(ctx)
 	user := models.GetUser(id)
 	json(ctx, models.SUCCESS, "view_post", iris.Map{
-		"title":   "View Post",
-		"session": ses(ctx),
-		"post": iris.Map{
-			"postID":    postID,
-			"title":     title,
-			"content":   content,
-			"createdBy": createdBy,
-			"createdAt": createdAt,
-		},
+		"postID":        postID,
+		"title":         title,
+		"content":       content,
+		"createdBy":     createdBy,
+		"createdAt":     createdAt,
 		"postCreatedBy": strconv.Itoa(createdBy),
 		"lon":           user.LikeOrNot(postID),
 		"likes":         likesCount,
@@ -151,7 +156,10 @@ func EditPost(ctx iris.Context) {
 	)
 
 	db.QueryRow("SELECT COUNT(postID) AS postCount, postID, title, content FROM posts WHERE postID=?", post).Scan(&postCount, &postID, &title, &content)
-	invalid(ctx, postCount)
+	if postCount == 0 {
+		ctx.Redirect("/404")
+		return
+	}
 
 	json(ctx, models.SUCCESS, "edit_post", iris.Map{
 		"title":   "Edit Post",
@@ -252,7 +260,10 @@ func Likes(ctx iris.Context) {
 	likes := []interface{}{}
 
 	db.QueryRow("SELECT COUNT(postID) AS postCount FROM posts WHERE postID=?", post).Scan(&postCount)
-	invalid(ctx, postCount)
+	if postCount == 0 {
+		ctx.Redirect("/404")
+		return
+	}
 
 	stmt, _ := db.Prepare("SELECT likeBy FROM likes WHERE postID=?")
 	rows, err := stmt.Query(post)

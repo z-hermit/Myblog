@@ -45,6 +45,8 @@ func main() {
 
 		get.Get("/view_post/:id", R.ViewPost)
 
+		get.Get("/home_posts", R.HomePost)
+
 		get.Get("/edit_post/:id", R.EditPost)
 
 		get.Get("/followers/:id", R.Followers)

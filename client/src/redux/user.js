@@ -24,12 +24,16 @@ const pageState = (state = initialState, action) => {
     case types.SET:
       console.log(action)
       return {
-        id: action.id,
-        username: action.username,
-        password: action.password,
-        bio: action.bio,
-        email:action.email,
-        avatarPath: action.avatarPath
+        id: action.user.id,
+        username: action.user.username,
+        password: action.user.password,
+        bio: action.user.bio,
+        email:action.user.email,
+        avatarPath: action.user.avatarPath,
+        followers: action.user.followers,
+        followings: action.user.followings,
+        posts: action.user.posts,
+        likes: action.user.likes
       };
     case types.LOGOUT:
       return initialState;
@@ -44,13 +48,9 @@ export default pageState;
 
 // Action Creators
 export const actions = {
-  set: (id, username, bio, email, avatarPath) => ({
+  set: (user) => ({
       type: types.SET,
-      id,
-      username,
-      bio,
-      email,
-      avatarPath
+      user
     }),
   signup: (callback) => (username, password, email) => (dispatch) => {
     let param = new URLSearchParams();
@@ -66,7 +66,8 @@ export const actions = {
       let respdata = response.data;
       console.log(respdata)
       if (respdata.code === 200) {
-        dispatch(actions.set(respdata.data.id, respdata.data.username, "", respdata.data.email, ""));
+        let user = respdata.data;
+        dispatch(actions.set(user));
       }
       callback(respdata);
     })
@@ -98,7 +99,8 @@ export const actions = {
       let respdata = response.data;
       console.log(respdata)
       if (respdata.code === 200) {
-        dispatch(actions.set(respdata.data.id, respdata.data.username, respdata.data.bio, respdata.data.email, respdata.data.avatarPath));
+        let user = respdata.data;
+        dispatch(actions.set(user));
       }
       callback(respdata);
     })

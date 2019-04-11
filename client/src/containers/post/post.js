@@ -31,7 +31,7 @@ class Post extends Component {
     const { postData } = this.props;
     console.log("Post render");
     return (
-      <a href={"/view_post/" + postData.id} className="note">
+      <Link  to={"/view_post/" + postData.id} className="note">
         <div className="note_header common_header">
           <img src={"/users/" + postData.createdBy + "/avatar.png"} alt="" srcSet=""/>
           <div className="note_h_left">
@@ -45,7 +45,7 @@ class Post extends Component {
         <div className="note_content">
           <span>{postData.content}</span>
         </div>
-      </a>
+      </Link>
     );
   }
 }

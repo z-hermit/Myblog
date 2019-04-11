@@ -7,8 +7,8 @@ import { Link } from 'react-router-dom';
 //components
 // import InfoTable from "../../components/info_table";
 import Nothing from "../../components/nothing"
-import End from "./end"
-import Post from "./post"
+import End from "../../components/end"
+import Post from "../post/post"
 //actions
 // import {actions as listActions} from '../../redux/';
 //utils
@@ -23,12 +23,17 @@ class home extends Component {
     console.log("home constructor");
   }
 
+  componentDidMount() {
+
+  }
+
   componentDidUpdate() {
   }
 
   render() {
-    // const { post } = this.props;
-    let post = [];
+    const { user } = this.props;
+    console.log(user);
+    let post = user.posts;
     console.log("home render");
 
     return (
@@ -41,9 +46,9 @@ class home extends Component {
           </div>
 
           {
-            post.length > 0 ? 
+            post && post.length > 0 ? 
             <div>
-              <Post />
+              {post.map((item, index) => <Post postData={item} key={index} /> )}
               <End />
             </div>
             :
@@ -58,7 +63,7 @@ class home extends Component {
 
 const mapStateToProps = state => {
   return {
-    // detailData:state.detailData[],
+    user: state.user
   }
 }
 

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import { connect } from 'react-redux'
+
 class NotFound extends Component {
 
   render() {
@@ -7,7 +9,7 @@ class NotFound extends Component {
     let button = null;
     if (user !== null) {
       button = <div>
-                  <a href="/profile/{{ .session.id }}" class="sec_btn">Visit your profile</a>
+                  <a href={`"/profile/"${user.id}`} class="sec_btn">Visit your profile</a>
                   <a href="/" class="pri_btn error_login">Try going to home</a>
                 </div>
     } else {
@@ -45,5 +47,5 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(EditProfile);
+)(NotFound);
 

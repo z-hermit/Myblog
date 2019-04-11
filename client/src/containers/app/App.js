@@ -14,6 +14,7 @@ import EditProfile from "../edit_profile/edit_profile"
 import Profile from "../profile/profile"
 import ViewPost from "../view_post/view_post"
 import Explore from "../explore/explore"
+import NotFound from "../404/404"
 
 import {
   BrowserRouter as Router,
@@ -35,6 +36,7 @@ class App extends Component {
               <Route exact path="/edit_profile/" component={EditProfile}/>
               <Route exact path="/profile/:id" component={Profile}/>
               <Route exact path="/view_post/:id" component={ViewPost}/>
+              <Route exact path="/404" component={NotFound}/>
               <Redirect to="/" />
             </Switch>
     } else {
